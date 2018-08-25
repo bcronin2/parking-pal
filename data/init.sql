@@ -23,7 +23,7 @@ CREATE TABLE parking_info (
   rt_toadd INT NOT NULL,
   streetname VARCHAR(20) NOT NULL,
   zip_code INT,
-  geo text
+  geo TEXT
 );
 
 CREATE TABLE user_info (
@@ -38,3 +38,8 @@ CREATE TABLE user_info (
 );
 
 COPY parking_info FROM '/Users/benc/Desktop/MVP/data/raw/parkingData.csv' WITH DELIMITER ',' CSV;
+
+CREATE INDEX on parking_info (ll_lon);
+CREATE INDEX on parking_info (ll_lat);
+CREATE INDEX on parking_info (ur_lon);
+CREATE INDEX on parking_info (ur_lat);

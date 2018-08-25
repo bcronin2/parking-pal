@@ -32,22 +32,23 @@ const processRow = rawRow => {
   const coordinates = rawRow[22]
     .substring(13, rawRow[22].length - 2)
     .split(", ")
-    .map(pair => pair.split(" "));
+    .map(pair => pair.split(" "))
+    .map(pair => [parseFloat(pair[0]), parseFloat(pair[1])]);
   // Find leftmost/rightmost longitudes and topmost/bottom-most latitudes
   processedRow[0] = coordinates.reduce(
-    (min, pair) => (parseFloat(pair[0]) < min ? parseFloat(pair[0]) : min),
+    (min, pair) => (pair[0] < min ? pair[0] : min),
     Number.POSITIVE_INFINITY
   );
   processedRow[1] = coordinates.reduce(
-    (min, pair) => (parseFloat(pair[1]) < min ? parseFloat(pair[1]) : min),
+    (min, pair) => (pair[1] < min ? pair[1] : min),
     Number.POSITIVE_INFINITY
   );
   processedRow[2] = coordinates.reduce(
-    (max, pair) => (parseFloat(pair[0]) > max ? parseFloat(pair[0]) : max),
+    (max, pair) => (pair[0] > max ? pair[0] : max),
     Number.NEGATIVE_INFINITY
   );
   processedRow[3] = coordinates.reduce(
-    (max, pair) => (parseFloat(pair[1]) > max ? parseFloat(pair[1]) : max),
+    (max, pair) => (pair[1] > max ? pair[1] : max),
     Number.NEGATIVE_INFINITY
   );
   // Map remaining data fields to desired positions in row (see raw/SAMPLE_from_sfgov.csv for original fields)
@@ -66,7 +67,7 @@ const processRow = rawRow => {
   processedRow[16] = rawRow[12];
   processedRow[17] = rawRow[13];
   processedRow[18] = rawRow[21];
-  processedRow[19] = rawRow[22];
+  processedRow[19] = '"' + JSON.stringify(coordinates) + '"';
   return processedRow.join(",");
 };
 
