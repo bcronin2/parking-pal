@@ -14,7 +14,8 @@
     "android": "react-native-scripts android",
     "ios": "react-native-scripts ios",
     "test": "jest",
-    "fetch-data": "node data.fetchData.js"
+    "fetch-data": "node data/fetchData.js",
+    "load-data": "psql < data/init.sql"
   },
   "jest": {
     "preset": "jest-expo"
