@@ -10,7 +10,7 @@ CREATE TABLE parking_info (
   cnnrightle VARCHAR(1),
   corridor VARCHAR(20),
   district VARCHAR(20),
-  fromhour TIME,
+  fromhour VARCHAR(10),
   holidays VARCHAR(1),
   lf_fadd INT NOT NULL,
   lf_toadd INT NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE parking_info (
   rt_fadd INT NOT NULL,
   rt_toadd INT NOT NULL,
   streetname VARCHAR(20) NOT NULL,
-  tohour TIME,
+  tohour VARCHAR(10),
   week1ofmon VARCHAR(1),
   week2ofmon VARCHAR(1),
   week3ofmon VARCHAR(1),
@@ -35,8 +35,8 @@ CREATE TABLE user_info (
   username VARCHAR(20) NOT NULL,
   pass VARCHAR(50) NOT NULL,
   is_parked BOOLEAN NOT NULL DEFAULT false,
-  latitude FLOAT,
-  longitude FLOAT,
+  latitude REAL,
+  longitude REAL,
   expiration TIME,
   PRIMARY KEY (id)
 );
