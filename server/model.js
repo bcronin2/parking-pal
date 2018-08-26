@@ -20,7 +20,7 @@ const getBlocksByPosition = (
     ll_lat > ${llLatitude} AND ll_lon > ${llLongitude} AND ur_lat < ${urLatitude} AND ur_lon < ${urLongitude}`;
   console.log(selectBlocks);
   database.query(selectBlocks, (err, results) =>
-    handleResults(err, results, callback)
+    handleResults(err, results.rows, callback)
   );
 };
 

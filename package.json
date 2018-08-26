@@ -16,12 +16,13 @@
     "test": "jest",
     "fetch-data": "node data/fetchData.js",
     "load-data": "psql < data/init.sql",
-    "run": "nodemon server/index.js"
+    "serve": "nodemon server/index.js"
   },
   "jest": {
     "preset": "jest-expo"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "expo": "^27.0.1",
     "fs": "0.0.1-security",
     "node-fetch": "^2.2.0",

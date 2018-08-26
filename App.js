@@ -1,8 +1,11 @@
+import axios from "axios";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 
-const defaultPosition = {
+const parkingEndpoint = "http://localhost:3000/api/parking";
+
+const defaultRegion = {
   latitude: 37.78825,
   longitude: -122.4324,
   latitudeDelta: 0.02,
@@ -13,27 +16,46 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      region: defaultPosition,
+      region: defaultRegion,
       center: {
-        latitude: defaultPosition.latitude,
-        longitude: defaultPosition.longitude
+        latitude: defaultRegion.latitude,
+        longitude: defaultRegion.longitude
       }
     };
     this.onRegionChange = this.onRegionChange.bind(this);
   }
 
   componentDidMount() {
-    navigator.geolocation.getCurrentPosition(
-      location => this.setState(location),
-      err => console.log(err)
-    );
+    this.getParkingInfo();
+    // navigator.geolocation.getCurrentPosition(
+    //   location => this.setState(location),
+    //   err => console.log(err)
+    // );
   }
 
   onRegionChange(region) {
-    console.log(region);
     this.setState({
+      region,
       center: { latitude: region.latitude, longitude: region.longitude }
     });
+  }
+
+  getParkingInfo() {
+    const { region } = this.state;
+    axios
+      .get(parkingEndpoint, {
+        params: {
+          llLatitude: region.latitude - 0.5 * region.latitudeDelta,
+          llLongitude: region.longitude - 0.5 * region.longitudeDelta,
+          urLatitude: region.latitude + 0.5 * region.latitudeDelta,
+          urLongitude: region.longitude + 0.5 * region.longitudeDelta
+        }
+      })
+      .then(results =>
+        this.setState({ blocks: results.data }, () =>
+          console.log(this.state.blocks)
+        )
+      );
   }
 
   render() {
@@ -43,7 +65,7 @@ export default class App extends React.Component {
       <MapView
         provider={PROVIDER_GOOGLE}
         style={styles.container}
-        initialRegion={region}
+        initialRegion={defaultRegion}
         onRegionChange={this.onRegionChange}
       >
         <Marker

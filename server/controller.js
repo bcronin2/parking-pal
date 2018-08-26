@@ -7,7 +7,7 @@ const handleResponse = (err, results, res) => {
   res.send(err || results);
 };
 
-router.get("/api/blocks", (req, res) => {
+router.get("/api/parking", (req, res) => {
   const {
     query: { llLatitude, llLongitude, urLatitude, urLongitude }
   } = req;
