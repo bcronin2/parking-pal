@@ -4,26 +4,24 @@ CREATE DATABASE parking_pal_db;
 \c parking_pal_db;
 
 CREATE TABLE parking_info (
+  id SERIAL NOT NULL,
   ll_lat DOUBLE PRECISION,
   ll_lon DOUBLE PRECISION,
   ur_lat DOUBLE PRECISION,
   ur_lon DOUBLE PRECISION,
   day VARCHAR(10),
-  fromhour VARCHAR(10),
-  tohour VARCHAR(10),
+  starthour INT,
+  endhour INT,
   holidays VARCHAR(1),
-  week1ofmon VARCHAR(1),
-  week2ofmon VARCHAR(1),
-  week3ofmon VARCHAR(1),
-  week4ofmon VARCHAR(1),
-  week5ofmon VARCHAR(1),
+  weeks JSON,
   lf_fadd INT NOT NULL,
   lf_toadd INT NOT NULL,
   rt_fadd INT NOT NULL,
   rt_toadd INT NOT NULL,
   streetname VARCHAR(20) NOT NULL,
   zip_code INT,
-  coordinates JSON
+  coordinates JSON,
+  blockside VARCHAR(10)
 );
 
 CREATE TABLE user_info (

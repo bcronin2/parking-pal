@@ -20,4 +20,8 @@ router.get("/api/parking", (req, res) => {
   );
 });
 
+// router.get("/api/parking", (req, res) => {
+//   model.getAllBlocks((err, results) => handleResponse(err, results, res));
+// });
+
 module.exports = router;

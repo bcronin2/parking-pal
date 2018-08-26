@@ -7,6 +7,8 @@ const streetCleaningFilename = "./data/raw/streetCleaningData.tsv";
 
 // TODO: Shorten functions in this file!
 
+let id = 1;
+
 const parseRow = rawRow => {
   if (!rawRow) return;
   const parsedRow = [];
@@ -30,7 +32,7 @@ const parseRow = rawRow => {
 };
 
 const processRow = rawRow => {
-  const processedRow = [];
+  const processedRow = [id++];
   // Parse string with latitude/longitude data for block
   const coordinates = rawRow[22]
     .substring(13, rawRow[22].length - 2)
@@ -41,43 +43,54 @@ const processRow = rawRow => {
       latitude: parseFloat(pair[1])
     }));
   // Find leftmost/rightmost longitudes and topmost/bottom-most latitudes
-  processedRow[0] = coordinates.reduce(
+  processedRow[1] = coordinates.reduce(
     (min, coordinate) =>
       coordinate.latitude < min ? coordinate.latitude : min,
     Number.POSITIVE_INFINITY
   );
-  processedRow[1] = coordinates.reduce(
+  processedRow[2] = coordinates.reduce(
     (min, coordinate) =>
       coordinate.longitude < min ? coordinate.longitude : min,
     Number.POSITIVE_INFINITY
   );
-  processedRow[2] = coordinates.reduce(
+  processedRow[3] = coordinates.reduce(
     (max, coordinate) =>
       coordinate.latitude > max ? coordinate.latitude : max,
     Number.NEGATIVE_INFINITY
   );
-  processedRow[3] = coordinates.reduce(
+  processedRow[4] = coordinates.reduce(
     (max, coordinate) =>
       coordinate.longitude > max ? coordinate.longitude : max,
     Number.NEGATIVE_INFINITY
   );
   // Map remaining data fields to desired positions in row (see raw/SAMPLE_from_sfgov.csv for original fields)
-  processedRow[4] = rawRow[20];
-  processedRow[5] = rawRow[6];
-  processedRow[6] = rawRow[14];
-  processedRow[7] = rawRow[7];
-  processedRow[8] = rawRow[15];
-  processedRow[9] = rawRow[16];
-  processedRow[10] = rawRow[17];
-  processedRow[11] = rawRow[18];
-  processedRow[12] = rawRow[19];
-  processedRow[13] = rawRow[8];
-  processedRow[14] = rawRow[9];
-  processedRow[15] = rawRow[11];
-  processedRow[16] = rawRow[12];
-  processedRow[17] = rawRow[13];
-  processedRow[18] = rawRow[21];
-  processedRow[19] = JSON.stringify(coordinates);
+  // day of week
+  processedRow[5] = rawRow[20];
+  // from/to hours
+  processedRow[6] = parseInt(rawRow[6]);
+  processedRow[7] = parseInt(rawRow[14]);
+  //holidays
+  processedRow[8] = rawRow[7];
+  // weeks
+  processedRow[9] = JSON.stringify([
+    rawRow[15],
+    rawRow[16],
+    rawRow[17],
+    rawRow[18],
+    rawRow[19]
+  ]);
+  // lf from/to
+  processedRow[10] = rawRow[8];
+  processedRow[11] = rawRow[9];
+  // rt from/to
+  processedRow[12] = rawRow[11];
+  processedRow[13] = rawRow[12];
+  // street, zip
+  processedRow[14] = rawRow[13];
+  processedRow[15] = rawRow[21];
+  // coords/block side
+  processedRow[16] = JSON.stringify(coordinates);
+  processedRow[17] = rawRow[0];
   return processedRow.join("\t");
 };
 
