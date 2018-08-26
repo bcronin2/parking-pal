@@ -1,8 +1,9 @@
 const fs = require("fs");
 const fetch = require("node-fetch");
 
-const apiEndpoint = "https://data.sfgov.org/api/views/u2ac-gv9v/rows.csv";
-const filename = "./data/raw/parkingData.csv";
+const streetCleaningEndpoint =
+  "https://data.sfgov.org/api/views/u2ac-gv9v/rows.csv";
+const streetCleaningFilename = "./data/raw/streetCleaningData.csv";
 
 const parseRow = rawRow => {
   if (!rawRow) return;
@@ -36,19 +37,19 @@ const processRow = rawRow => {
     .map(pair => [parseFloat(pair[0]), parseFloat(pair[1])]);
   // Find leftmost/rightmost longitudes and topmost/bottom-most latitudes
   processedRow[0] = coordinates.reduce(
-    (min, pair) => (pair[0] < min ? pair[0] : min),
-    Number.POSITIVE_INFINITY
-  );
-  processedRow[1] = coordinates.reduce(
     (min, pair) => (pair[1] < min ? pair[1] : min),
     Number.POSITIVE_INFINITY
   );
+  processedRow[1] = coordinates.reduce(
+    (min, pair) => (pair[0] < min ? pair[0] : min),
+    Number.POSITIVE_INFINITY
+  );
   processedRow[2] = coordinates.reduce(
-    (max, pair) => (pair[0] > max ? pair[0] : max),
+    (max, pair) => (pair[1] > max ? pair[1] : max),
     Number.NEGATIVE_INFINITY
   );
   processedRow[3] = coordinates.reduce(
-    (max, pair) => (pair[1] > max ? pair[1] : max),
+    (max, pair) => (pair[0] > max ? pair[0] : max),
     Number.NEGATIVE_INFINITY
   );
   // Map remaining data fields to desired positions in row (see raw/SAMPLE_from_sfgov.csv for original fields)
@@ -81,17 +82,21 @@ const processData = data => {
 };
 
 const fetchData = () => {
-  fetch(apiEndpoint)
+  fetch(streetCleaningEndpoint)
     .then(res => res.text())
     .then(data => {
       const result = processData(data);
-      const dest = fs.createWriteStream(filename);
+      const dest = fs.createWriteStream(streetCleaningFilename);
       dest.write(result, () => {
-        console.log("Successfully fetched parking data from " + apiEndpoint);
+        console.log(
+          "Successfully fetched parking data from " + streetCleaningEndpoint
+        );
       });
     })
     .catch(err => {
-      console.error("Could not fetch parking data from " + apiEndpoint);
+      console.error(
+        "Could not fetch parking data from " + streetCleaningEndpoint
+      );
     });
 };
 

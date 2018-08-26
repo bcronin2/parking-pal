@@ -4,10 +4,10 @@ CREATE DATABASE parking_pal_db;
 \c parking_pal_db;
 
 CREATE TABLE parking_info (
-  ll_lon DOUBLE PRECISION,
   ll_lat DOUBLE PRECISION,
-  ur_lon DOUBLE PRECISION,
+  ll_lon DOUBLE PRECISION,
   ur_lat DOUBLE PRECISION,
+  ur_lon DOUBLE PRECISION,
   day VARCHAR(10),
   fromhour VARCHAR(10),
   tohour VARCHAR(10),
@@ -37,7 +37,7 @@ CREATE TABLE user_info (
   PRIMARY KEY (id)
 );
 
-COPY parking_info FROM '/Users/benc/Desktop/MVP/data/raw/parkingData.csv' WITH DELIMITER ',' CSV;
+COPY parking_info FROM '/Users/benc/Desktop/MVP/data/raw/streetCleaningData.csv' WITH DELIMITER ',' CSV;
 
 CREATE INDEX on parking_info (ll_lon);
 CREATE INDEX on parking_info (ll_lat);
