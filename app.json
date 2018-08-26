@@ -1,5 +1,8 @@
 {
   "expo": {
     "sdkVersion": "27.0.0"
+  },
+  "infoPlist": {
+    "NSLocationWhenInUseUsageDescription": "This app displays available parking near you."
   }
 }

@@ -35,10 +35,10 @@ export default class App extends React.Component {
 
   componentDidMount() {
     this.getParkingInfo();
-    // navigator.geolocation.getCurrentPosition(
-    //   location => this.setState(location),
-    //   err => console.log(err)
-    // );
+    navigator.geolocation.getCurrentPosition(
+      location => this.setState(location),
+      err => console.log(err)
+    );
   }
 
   onRegionChange(region) {
@@ -80,6 +80,8 @@ export default class App extends React.Component {
         style={styles.container}
         initialRegion={defaultRegion}
         showsUserLocation={true}
+        showsMyLocationButton={true}
+        loadingEnabled={true}
         onRegionChange={this.onRegionChange}
       >
         {blocks &&
