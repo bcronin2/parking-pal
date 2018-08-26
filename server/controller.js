@@ -11,7 +11,7 @@ router.get("/api/parking", (req, res) => {
   const {
     query: { llLatitude, llLongitude, urLatitude, urLongitude }
   } = req;
-  model.getBlocksByPosition(
+  model.getBlocksForRegion(
     llLatitude,
     llLongitude,
     urLatitude,

@@ -1,7 +1,7 @@
 import axios from "axios";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 
 const parkingEndpoint = "http://localhost:3000/api/parking";
 
@@ -51,15 +51,11 @@ export default class App extends React.Component {
           urLongitude: region.longitude + 0.5 * region.longitudeDelta
         }
       })
-      .then(results =>
-        this.setState({ blocks: results.data }, () =>
-          console.log(this.state.blocks)
-        )
-      );
+      .then(results => this.setState({ blocks: results.data }));
   }
 
   render() {
-    const { region, center } = this.state;
+    const { region, center, blocks } = this.state;
     console.log(center);
     return (
       <MapView
@@ -74,6 +70,14 @@ export default class App extends React.Component {
           description="Description"
           // image={require("./assets/car_icon.png")}
         />
+        {blocks &&
+          blocks.map(block => (
+            <Polyline
+              coordinates={block.coordinates}
+              strokeColor="#000"
+              strokeWidth={1}
+            />
+          ))}
       </MapView>
       // <View style={styles.container}>
       //   <Text>Open up App.js to start working on your app!</Text>

@@ -9,7 +9,7 @@ const handleResults = (err, results, callback) => {
   }
 };
 
-const getBlocksByPosition = (
+const getBlocksForRegion = (
   llLatitude,
   llLongitude,
   urLatitude,
@@ -24,4 +24,4 @@ const getBlocksByPosition = (
   );
 };
 
-module.exports = { getBlocksByPosition };
+module.exports = { getBlocksForRegion };
