@@ -1,9 +1,10 @@
 import axios from "axios";
 import React from "react";
-import { Button, StyleSheet, Text, View } from "react-native";
+import { Button, Text, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 
 import Block from "./Block.js";
+import styles from "./styles.js";
 
 const parkingInfoEndpoint = "http://localhost:3000/api/parking";
 const userParkingEndpoint = "http://localhost:3000/api/users";
@@ -245,7 +246,7 @@ export default class Map extends React.Component {
               {"\n"} Time remaining:{" "}
               {convertMillis(parkedExpiration - currentTime)}
             </Text>
-            <View style={styles.buttonGroup}>
+            <View style={styles.row}>
               <Button
                 style={styles.button}
                 title={"Go to car"}
@@ -263,59 +264,3 @@ export default class Map extends React.Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-    height: "100%",
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center"
-  },
-  map: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%"
-  },
-  top: {
-    position: "absolute",
-    width: "100%",
-    height: "10%",
-    margin: 10,
-    backgroundColor: "lightgrey",
-    borderRadius: 10,
-    shadowColor: "black",
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    shadowOffset: { width: 2, height: 4 }
-  },
-  bottom: {
-    position: "absolute",
-    bottom: 0,
-    width: "100%",
-    height: "10%",
-    margin: 10,
-    display: "flex",
-    backgroundColor: "lightgrey",
-    borderRadius: 10,
-    shadowColor: "black",
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    shadowOffset: { width: 2, height: 4 }
-  },
-  buttonGroup: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center"
-  },
-  button: {
-    backgroundColor: "steelblue",
-    color: "white"
-  },
-  text: {
-    fontSize: 16,
-    textAlign: "center"
-  }
-});

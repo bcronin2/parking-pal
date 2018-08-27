@@ -1,11 +1,16 @@
 import axios from "axios";
 import React from "react";
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import { Button, ImageBackground, Text, TextInput, View } from "react-native";
+
+import styles from "./styles.js";
 
 require("./utils.js");
 
 const userLoginEndpoint = "http://localhost:3000/api/users/login";
 const userCreateEndpoint = "http://localhost:3000/api/users/create";
+
+const backgroundImageUrl =
+  "https://i0.wp.com/gifrific.com/wp-content/uploads/2015/03/Reverse-Spinning-Parralel-Park.gif?resize=425%2C219&ssl=1";
 
 export default class Landing extends React.Component {
   constructor(props) {
@@ -53,30 +58,29 @@ export default class Landing extends React.Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <Text>Welcome to ParkingPal</Text>
-        <TextInput
-          placeholder="Username"
-          onChangeText={username => this.setState({ username })}
-        />
-        <TextInput
-          placeholder="Password"
-          secureTextEntry={true}
-          onChangeText={password => this.setState({ password })}
-        />
-        <Button title="Login" onPress={this.loginUser} />
-        <Button title="Sign up" onPress={this.createUser} />
-      </View>
+      <ImageBackground
+        style={styles.container}
+        source={{ uri: backgroundImageUrl }}
+      >
+        <Text style={styles.title}>Welcome to ParkingPal</Text>
+        <View style={styles.form}>
+          <TextInput
+            style={styles.input}
+            placeholder="Username"
+            onChangeText={username => this.setState({ username })}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            secureTextEntry={true}
+            onChangeText={password => this.setState({ password })}
+          />
+          <View style={styles.row}>
+            <Button title="Login" onPress={this.loginUser} />
+            <Button title="Sign up" onPress={this.createUser} />
+          </View>
+        </View>
+      </ImageBackground>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#fff",
-    alignItems: "center"
-  }
-});
