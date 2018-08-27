@@ -26,7 +26,6 @@
     "datejs": "^1.0.0-rc3",
     "expo": "^27.0.1",
     "fs": "0.0.1-security",
-    "lodash": "^4.17.10",
     "morgan": "^1.9.0",
     "node-fetch": "^2.2.0",
     "nodemon": "^1.18.3",

@@ -1,5 +1,4 @@
 import axios from "axios";
-// import _ from "lodash";
 import React from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
@@ -20,7 +19,18 @@ const defaultRegion = {
 
 const days = ["Sun", "Mon", "Tues", "Wed", "Thu", "Fri", "Sat"];
 
-const maxParking = 72 * 60 * 60 * 1000;
+const millisPerMinute = 60 * 1000;
+const millisPerHour = 60 * millisPerMinute;
+const maxParking = 72 * millisPerHour;
+
+const convertMillis = millis => {
+  let hours = Math.floor(millis / millisPerHour);
+  millis %= millisPerHour;
+  let minutes = Math.floor(millis / millisPerMinute);
+  millis %= millisPerMinute;
+  let seconds = Math.floor(millis / 1000);
+  return `${hours}hr, ${minutes}min, ${seconds}s`;
+};
 
 // TODO: Clean up state--don't need to many values
 
@@ -34,15 +44,13 @@ export default class Map extends React.Component {
         }
       }
     } = props;
-    const currentTime = new Date("August 22, 2018 9:00");
-    console.log(user.expiration);
-    console.log(user.expiration - currentTime.getTime());
+    const now = new Date("August 22, 2018 9:00");
     this.state = {
       user,
-      currentTime,
-      dayIndexInWeek: currentTime.getDay(),
-      dayIndexInMonth: Math.floor(currentTime.getDate() / 7),
-      currentHour: currentTime.getHours(),
+      currentTime: now.getTime(),
+      dayIndexInWeek: now.getDay(),
+      dayIndexInMonth: Math.floor(now.getDate() / 7),
+      currentHour: now.getHours(),
       region: defaultRegion,
       selectedBlock: null,
       selectedExpiration: null,
@@ -59,10 +67,16 @@ export default class Map extends React.Component {
     this.onRegionChangeComplete = this.onRegionChangeComplete.bind(this);
     this.selectBlock = this.selectBlock.bind(this);
     this.park = this.park.bind(this);
+    this.unpark = this.unpark.bind(this);
+    this.findCar = this.findCar.bind(this);
   }
 
   componentDidMount() {
-    this.getParkingInfo();
+    const { parkedCoordinates } = this.state;
+    if (parkedCoordinates) {
+    } else {
+      this.getParkingInfo();
+    }
   }
 
   onRegionChange(region) {
@@ -75,17 +89,21 @@ export default class Map extends React.Component {
     this.getParkingInfo();
   }
 
-  getParkingInfo() {
+  getCurrentBoundary() {
     const { region } = this.state;
     const viewDimension = Math.min(defaultDimension, region.latitudeDelta);
+    return {
+      llLatitude: region.latitude - 0.5 * viewDimension,
+      llLongitude: region.longitude - 0.5 * viewDimension,
+      urLatitude: region.latitude + 0.5 * viewDimension,
+      urLongitude: region.longitude + 0.5 * viewDimension
+    };
+  }
+
+  getParkingInfo() {
     axios
       .get(parkingInfoEndpoint, {
-        params: {
-          llLatitude: region.latitude - 0.5 * viewDimension,
-          llLongitude: region.longitude - 0.5 * viewDimension,
-          urLatitude: region.latitude + 0.5 * viewDimension,
-          urLongitude: region.longitude + 0.5 * viewDimension
-        }
+        params: this.getCurrentBoundary()
       })
       .then(
         results => this.setState({ blocks: results.data }),
@@ -99,7 +117,7 @@ export default class Map extends React.Component {
   }
 
   park() {
-    const { selectedBlock, selectedExpiration } = this.state;
+    const { selectedBlock, selectedExpiration, currentTime } = this.state;
     const selectedCoordinates = {
       latitude: selectedBlock.ll_lat,
       longitude: selectedBlock.ll_lon
@@ -114,25 +132,42 @@ export default class Map extends React.Component {
           coordinates: selectedCoordinates,
           expiration: Math.min(
             selectedExpiration.getTime(),
-            currentTime.getTime() + maxParking
+            currentTime + maxParking
           )
         });
       }
     );
   }
 
+  unpark() {
+    this.setState(
+      {
+        parkedCoordinates: null,
+        parkedExpiration: null
+      },
+      () => {
+        axios.patch(`${userParkingEndpoint}/${this.state.user.id}/upark`);
+      }
+    );
+  }
+
+  findCar() {
+    const { parkedCoordinates } = this.state;
+    this._map.animateToCoordinate(parkedCoordinates, 2);
+  }
+
   getExpiration(block) {
     const { currentTime } = this.state;
-    let testDate = currentTime;
+    let testDate = new Date(currentTime);
     testDate.setHours(0, 0, 0, 0);
     while (true) {
       const sweepDay = block.days.indexOf(days[testDate.getDay()]) >= 0;
       const sweepWeek = block.weeks[Math.floor(testDate.getDate() / 7)] === "Y";
       if (sweepDay && sweepWeek) {
-        expiration = testDate;
+        expiration = testDate.getTime();
         if (
           expiration > currentTime ||
-          block.end_hour > currentTime.getHours()
+          expiration + block.end_hour * 60 * 60 * 1000 > currentTime
         ) {
           testDate.setHours(block.start_hour);
           return testDate;
@@ -159,20 +194,19 @@ export default class Map extends React.Component {
           selectedBlock.street_name
         }`
       : null;
-    const selectedBlockInfo = `Current selection: ${addressInfo}
-      Next sweeping: ${selectedExpiration}`;
+    const selectedBlockInfo =
+      addressInfo &&
+      `${addressInfo}
+      Free until ${selectedExpiration.toString().split("GMT")[0]}`;
     return (
       <View style={styles.container}>
         <MapView
+          ref={map => (this._map = map)}
           provider={null}
           style={styles.map}
           initialRegion={defaultRegion}
           loadingEnabled={true}
           showsUserLocation={true}
-          showsMyLocationButton={true}
-          showsPointsOfInterest={false}
-          showsBuildings={false}
-          showsTraffic={false}
           onRegionChange={this.onRegionChange}
           onRegionChangeComplete={this.onRegionChangeComplete}
         >
@@ -189,17 +223,34 @@ export default class Map extends React.Component {
               />
             ))}
           {parkedCoordinates && (
-            <Marker title="Parked vehicle" coordinate={parkedCoordinates} />
+            <Marker title="Parked car" coordinate={parkedCoordinates} />
           )}
         </MapView>
-        <View style={styles.top}>
-          <Text style={styles.text}>
-            {selectedBlock
-              ? selectedBlockInfo
-              : "Press part of the map to view parking info"}
-          </Text>
-          {selectedBlock && <Button title={"Park here"} onPress={this.park} />}
-        </View>
+        {selectedBlock && (
+          <View style={styles.top}>
+            <Text style={styles.text}>{selectedBlockInfo}</Text>
+            <Button title={"Park here"} onPress={this.park} />
+          </View>
+        )}
+        {parkedCoordinates && (
+          <View style={styles.bottom}>
+            <Text style={styles.text}>
+              Your car is currently parked.
+              {"\n"} Time remaining:{" "}
+              {convertMillis(parkedExpiration - currentTime)}
+            </Text>
+            <Button
+              style={styles.button}
+              title={"Go to car"}
+              onPress={this.findCar}
+            />
+            <Button
+              style={styles.button}
+              title={"Unpark"}
+              onPress={this.unpark}
+            />
+          </View>
+        )}
       </View>
     );
   }
@@ -219,10 +270,6 @@ const styles = StyleSheet.create({
     left: 0,
     width: "100%",
     height: "100%"
-    // flex: 1,
-    // backgroundColor: "#fff",
-    // alignItems: "center"
-    // justifyContent: "center"
   },
   top: {
     position: "absolute",
@@ -250,8 +297,12 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     shadowOffset: { width: 2, height: 4 }
   },
+  button: {
+    backgroundColor: "steelblue",
+    color: "white"
+  },
   text: {
-    fontSize: 12,
+    fontSize: 16,
     textAlign: "center"
   }
 });

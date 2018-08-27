@@ -1,5 +1,4 @@
 import React from "react";
-// import { Navigator } from "react-native-deprecated-custom-components";
 import { createStackNavigator } from "react-navigation";
 
 import LandingScreen from "./components/Landing.js";
