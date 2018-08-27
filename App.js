@@ -1,29 +1,21 @@
 import React from "react";
-import { Navigator } from "react-native-deprecated-custom-components";
+// import { Navigator } from "react-native-deprecated-custom-components";
+import { createStackNavigator } from "react-navigation";
 
-import Landing from "./components/Landing.js";
-import Map from "./components/Map.js";
+import LandingScreen from "./components/Landing.js";
+import MapScreen from "./components/Map.js";
 
-const routes = [{ title: "Landing", index: 0 }, { title: "Map", index: 1 }];
+const Navigation = createStackNavigator({
+  Landing: {
+    screen: LandingScreen
+  },
+  Map: {
+    screen: MapScreen
+  }
+});
 
 export default class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.renderScene = this.renderScene.bind(this);
-  }
-
-  renderScene(route, navigator) {
-    const { title } = route;
-    if (title === "Landing") {
-      return <Landing navigator={navigator} />;
-    } else if (title === "Map") {
-      return <Map navigator={navigator} />;
-    }
-  }
-
   render() {
-    return (
-      <Navigator initialRoute={routes[0]} renderScene={this.renderScene} />
-    );
+    return <Navigation />;
   }
 }

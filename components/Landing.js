@@ -18,18 +18,18 @@ export default class Landing extends React.Component {
     this.createUser = this.createUser.bind(this);
   }
 
-  loginUser() {
+  validateUser(endpoint, errorMessage) {
     let { username, password } = this.state;
     username = username.toLowerCase();
     password = password.hashCode();
     if (username && password) {
-      axios.post(userLoginEndpoint, { username, password }).then(
+      axios.post(endpoint, { username, password }).then(
         results => {
-          const { navigator } = this.props;
-          navigator.push({ title: "Map" });
+          const { navigation } = this.props;
+          navigation.navigate("Map", { user: results.data[0] });
         },
         err => {
-          alert("Oops! There was an error with your username or password.");
+          alert(errorMessage);
         }
       );
     } else {
@@ -37,23 +37,18 @@ export default class Landing extends React.Component {
     }
   }
 
+  loginUser() {
+    this.validateUser(
+      userLoginEndpoint,
+      "Oops! There was something wrong with your username or password."
+    );
+  }
+
   createUser() {
-    let { username, password } = this.state;
-    username = username.toLowerCase();
-    password = password.hashCode();
-    if (username && password) {
-      axios.post(userCreateEndpoint, { username, password }).then(
-        results => {
-          const { navigator } = this.props;
-          navigator.push({ title: "Map" });
-        },
-        err => {
-          alert("Oops! It looks like that user already exists.");
-        }
-      );
-    } else {
-      alert("Please enter a username and password!");
-    }
+    this.validateUser(
+      userCreateEndpoint,
+      "Oops! It looks like that user already exists."
+    );
   }
 
   render() {

@@ -22,9 +22,18 @@ const days = ["Sun", "Mon", "Tues", "Wed", "Thu", "Fri", "Sat"];
 export default class Map extends React.Component {
   constructor(props) {
     super(props);
+    const {
+      navigation: {
+        state: {
+          params: { user }
+        }
+      }
+    } = props;
     const currentTime = new Date("August 22, 2018 9:00");
     this.state = {
       currentTime,
+      userId: (user && user.id) || 0,
+      username: (user && user.username) || "Guest",
       region: defaultRegion,
       selectedBlock: null,
       parkedBlock: null,
@@ -32,6 +41,7 @@ export default class Map extends React.Component {
       dayIndexInMonth: Math.floor(currentTime.getDate() / 7),
       currentHour: currentTime.getHours()
     };
+    this.onRegionChange = this.onRegionChange.bind(this);
     this.onRegionChangeComplete = this.onRegionChangeComplete.bind(this);
     this.selectBlock = this.selectBlock.bind(this);
     this.setParking = this.setParking.bind(this);
@@ -41,10 +51,14 @@ export default class Map extends React.Component {
     this.getParkingInfo();
   }
 
-  onRegionChangeComplete(region) {
+  onRegionChange(region) {
     this.setState({
       region
-    }, this.getParkingInfo);
+    });
+  }
+
+  onRegionChangeComplete() {
+    this.getParkingInfo();
   }
 
   getParkingInfo() {
@@ -72,7 +86,7 @@ export default class Map extends React.Component {
   setParking() {
     const { selectedBlock, parkedBlock } = this.state;
     this.setState({
-      parkedBlock: selectedBlock != parkedBlock ? selectedBlock : null
+      parkedBlock: selectedBlock !== parkedBlock ? selectedBlock : null
     });
   }
 
@@ -128,6 +142,7 @@ export default class Map extends React.Component {
           showsPointsOfInterest={false}
           showsBuildings={false}
           showsTraffic={false}
+          onRegionChange={this.onRegionChange}
           onRegionChangeComplete={this.onRegionChangeComplete}
         >
           {blocks &&

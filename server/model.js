@@ -32,14 +32,14 @@ const loginUser = (username, password, callback) => {
 };
 
 const createUser = (username, password, callback) => {
-  const insertUser = `INSERT INTO user_info (username, password) VALUES ('${username}', '${password}')`;
+  const insertUser = `INSERT INTO user_info (username, password) VALUES ('${username}', '${password}') RETURNING *`;
   database.query(insertUser, (err, results) =>
     handleResults(err, results, callback)
   );
 };
 
 const parkAtLocation = (userId, coordinates, expiration, callback) => {
-  const updateParkingStatus = `UPDATE user_info SET is_parked=1, latitude=${
+  const updateParkingStatus = `UPDATE user_info SET latitude=${
     coordinates.latitude
   }, longitude=${
     coordinates.longitude
@@ -50,7 +50,7 @@ const parkAtLocation = (userId, coordinates, expiration, callback) => {
 };
 
 const unpark = (userId, callback) => {
-  const updateParkingStatus = `UPDATE user_info SET is_parked=0, latitude=null, longitude=null, expiration=null WHERE id=${userId}`;
+  const updateParkingStatus = `UPDATE user_info SET latitude=null, longitude=null, expiration=null WHERE id=${userId}`;
   database.query(updateParkingStatus, (err, results) =>
     handleResults(err, results, callback)
   );
