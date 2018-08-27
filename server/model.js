@@ -25,9 +25,10 @@ const getBlocksForRegion = (
 
 const loginUser = (username, password, callback) => {
   const selectUser = `SELECT * FROM user_info WHERE username='${username}' AND password='${password}'`;
-  database.query(selectUser, (err, results) =>
-    handleResults(err, results, callback)
-  );
+  database.query(selectUser, (err, results) => {
+    if (!results.rows.length) err = new Error("Bad password");
+    handleResults(err, results, callback);
+  });
 };
 
 const createUser = (username, password, callback) => {
@@ -35,20 +36,30 @@ const createUser = (username, password, callback) => {
   database.query(insertUser, (err, results) =>
     handleResults(err, results, callback)
   );
-}
+};
 
 const parkAtLocation = (userId, coordinates, expiration, callback) => {
-  const updateParkingStatus = `UPDATE user_info SET is_parked=1, latitude=${coordinates.latitude}, longitude=${coordinates.longitude}, expiration=${expiration} WHERE id=${userId}`;
+  const updateParkingStatus = `UPDATE user_info SET is_parked=1, latitude=${
+    coordinates.latitude
+  }, longitude=${
+    coordinates.longitude
+  }, expiration=${expiration} WHERE id=${userId}`;
   database.query(updateParkingStatus, (err, results) =>
     handleResults(err, results, callback)
   );
-}
+};
 
 const unpark = (userId, callback) => {
   const updateParkingStatus = `UPDATE user_info SET is_parked=0, latitude=null, longitude=null, expiration=null WHERE id=${userId}`;
   database.query(updateParkingStatus, (err, results) =>
     handleResults(err, results, callback)
   );
-}
+};
 
-module.exports = { getBlocksForRegion, loginUser, createUser, parkAtLocation, unpark };
+module.exports = {
+  getBlocksForRegion,
+  loginUser,
+  createUser,
+  parkAtLocation,
+  unpark
+};
