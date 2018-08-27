@@ -1,8 +1,8 @@
 import axios from "axios";
 import _ from "lodash";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import MapView from "react-native-maps";
+import { Button, StyleSheet, Text, View } from "react-native";
+import MapView, { Marker } from "react-native-maps";
 
 import Block from "./components/Block.js";
 
@@ -35,6 +35,7 @@ export default class App extends React.Component {
     this.onRegionChange = this.onRegionChange.bind(this);
     this.onRegionChangeComplete = this.onRegionChangeComplete.bind(this);
     this.selectBlock = this.selectBlock.bind(this);
+    this.toggleParking = this.toggleParking.bind(this);
   }
 
   componentDidMount() {
@@ -77,6 +78,17 @@ export default class App extends React.Component {
     this.setState({ selectedBlock: block });
   }
 
+  toggleParking() {
+    console.log("toggling parking");
+    const { selectedBlock, parkedBlock } = this.state;
+    this.setState(
+      {
+        parkedBlock: selectedBlock !== parkedBlock ? selectedBlock : null
+      },
+      () => console.log(parkedBlock)
+    );
+  }
+
   getNextSweeping(block) {
     let { currentTime } = this.state;
     let testDate = currentTime;
@@ -102,18 +114,29 @@ export default class App extends React.Component {
     const {
       blocks,
       selectedBlock,
+      parkedBlock,
       dayIndexInWeek,
       dayIndexInMonth,
       currentHour
     } = this.state;
+    const addressInfo = selectedBlock
+      ? `${selectedBlock.lf_fadd}-${selectedBlock.lf_toadd} ${
+          selectedBlock.streetname
+        }`
+      : null;
+    const nextSweeping = selectedBlock
+      ? this.getNextSweeping(selectedBlock)
+      : null;
+    const selectedBlockInfo = `Current selection: ${addressInfo}
+      Next sweeping: ${nextSweeping}`;
     return (
       <MapView
         provider={null}
         style={styles.container}
         initialRegion={defaultRegion}
+        loadingEnabled={true}
         showsUserLocation={true}
         showsMyLocationButton={true}
-        loadingEnabled={true}
         showsPointsOfInterest={false}
         showsBuildings={false}
         showsTraffic={false}
@@ -132,11 +155,35 @@ export default class App extends React.Component {
               pressHandler={this.selectBlock}
             />
           ))}
+        {parkedBlock && (
+          <Marker
+            title="Parked vehicle"
+            coordinate={{
+              latitude: parkedBlock.ll_lat,
+              longitude: parkedBlock.ll_lon
+            }}
+          />
+        )}
         <View style={styles.top}>
           <Text style={styles.text}>
-            Press part of the map to view parking info
+            {nextSweeping
+              ? selectedBlockInfo
+              : "Press part of the map to view parking info"}
           </Text>
         </View>
+        {/* {(selectedBlock || parkedBlock) && (
+          // <View style={styles.bottom}>
+          <Button
+            style={styles.bottom}
+            title={
+              selectedBlock && parkedBlock !== selectedBlock
+                ? "Park here"
+                : "Unpark"
+            }
+            onPress={this.toggleParking()}
+          />
+          // </View>
+        )} */}
       </MapView>
     );
   }
@@ -151,6 +198,20 @@ const styles = StyleSheet.create({
   },
   top: {
     position: "absolute",
+    width: "100%",
+    height: "10%",
+    margin: "10%",
+    display: "flex",
+    backgroundColor: "lightgrey",
+    borderRadius: 10,
+    shadowColor: "black",
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    shadowOffset: { width: 2, height: 4 }
+  },
+  bottom: {
+    position: "absolute",
+    bottom: 0,
     width: "100%",
     height: "10%",
     margin: "10%",
