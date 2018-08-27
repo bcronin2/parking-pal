@@ -39,6 +39,7 @@ const createUser = (username, password, callback) => {
 };
 
 const parkAtLocation = (userId, coordinates, expiration, callback) => {
+  console.log(expiration);
   const updateParkingStatus = `UPDATE user_info SET latitude=${
     coordinates.latitude
   }, longitude=${

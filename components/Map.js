@@ -20,14 +20,9 @@ const defaultRegion = {
 
 const days = ["Sun", "Mon", "Tues", "Wed", "Thu", "Fri", "Sat"];
 
-const sameLocation = (coords1, coords2) => {
-  return (
-    !coords1 ||
-    !coords2 ||
-    (coords1.latitude === coords2.latitude &&
-      coords1.longitude === coords2.longitude)
-  );
-};
+const maxParking = 72 * 60 * 60 * 1000;
+
+// TODO: Clean up state--don't need to many values
 
 export default class Map extends React.Component {
   constructor(props) {
@@ -40,6 +35,8 @@ export default class Map extends React.Component {
       }
     } = props;
     const currentTime = new Date("August 22, 2018 9:00");
+    console.log(user.expiration);
+    console.log(user.expiration - currentTime.getTime());
     this.state = {
       user,
       currentTime,
@@ -115,7 +112,10 @@ export default class Map extends React.Component {
       () => {
         axios.patch(`${userParkingEndpoint}/${this.state.user.id}/park`, {
           coordinates: selectedCoordinates,
-          expiration: selectedExpiration
+          expiration: Math.min(
+            selectedExpiration.getTime(),
+            currentTime.getTime() + maxParking
+          )
         });
       }
     );
@@ -123,7 +123,6 @@ export default class Map extends React.Component {
 
   getExpiration(block) {
     const { currentTime } = this.state;
-    console.log(currentTime);
     let testDate = currentTime;
     testDate.setHours(0, 0, 0, 0);
     while (true) {
@@ -155,7 +154,6 @@ export default class Map extends React.Component {
       parkedCoordinates,
       parkedExpiration
     } = this.state;
-    console.log(dayIndexInMonth, dayIndexInWeek, currentHour);
     const addressInfo = selectedBlock
       ? `${selectedBlock.fadd}-${selectedBlock.toadd} ${
           selectedBlock.street_name
@@ -200,9 +198,7 @@ export default class Map extends React.Component {
               ? selectedBlockInfo
               : "Press part of the map to view parking info"}
           </Text>
-          {(selectedBlock || parkedCoordinates) && (
-            <Button title={"Park here"} onPress={this.park} />
-          )}
+          {selectedBlock && <Button title={"Park here"} onPress={this.park} />}
         </View>
       </View>
     );

@@ -28,7 +28,7 @@ CREATE TABLE user_info (
   password VARCHAR(50) NOT NULL,
   latitude DOUBLE PRECISION DEFAULT NULL,
   longitude DOUBLE PRECISION DEFAULT NULL,
-  expiration TIME DEFAULT NULL,
+  expiration BIGINT DEFAULT NULL,
   PRIMARY KEY (id)
   );
 
