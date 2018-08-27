@@ -24,14 +24,14 @@ CREATE TABLE parking_info (
 
 CREATE TABLE user_info (
   id SERIAL NOT NULL,
-  username VARCHAR(20) NOT NULL,
-  pass VARCHAR(50) NOT NULL,
+  username VARCHAR(20) UNIQUE NOT NULL,
+  password VARCHAR(50) NOT NULL,
   is_parked BOOLEAN NOT NULL DEFAULT false,
-  longitude DECIMAL,
-  latitude DOUBLE PRECISION,
-  expiration TIME,
+  latitude DOUBLE PRECISION DEFAULT NULL,
+  longitude DOUBLE PRECISION DEFAULT NULL,
+  expiration TIME DEFAULT NULL,
   PRIMARY KEY (id)
-);
+  );
 
 COPY parking_info FROM '/Users/benc/Desktop/MVP/data/raw/streetCleaningData.csv' WITH DELIMITER E'|';
 

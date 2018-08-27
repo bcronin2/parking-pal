@@ -1,13 +1,8 @@
-import axios from "axios";
-// import _ from "lodash";
-import React, { Component } from "react";
-import { Button, StyleSheet, Text, View } from "react-native";
+import React from "react";
 import { Navigator } from "react-native-deprecated-custom-components";
 
+import Landing from './components/Landing.js';
 import Map from "./components/Map.js";
-
-console.log(Map);
-console.log(Navigator);
 
 export default class App extends React.Component {
   constructor(props) {

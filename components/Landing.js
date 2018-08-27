@@ -2,49 +2,36 @@ import axios from "axios";
 // import _ from "lodash";
 import React from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
-import MapView, { Marker } from "react-native-maps";
 
-import Block from "./Block.js";
+const userLoginEndpoint = "http://localhost:3000/api/users/login";
+const userCreateEndpoint = "http://localhost:3000/api/users/create";
 
-const parkingEndpoint = "http://localhost:3000/api/parking";
-
-const defaultDimension = 0.02;
-
-const defaultRegion = {
-  latitude: 37.7836839,
-  longitude: -122.40898609999999,
-  latitudeDelta: defaultDimension,
-  longitudeDelta: 0.5 * defaultDimension
-};
-
-const days = ["Sun", "Mon", "Tues", "Wed", "Thu", "Fri", "Sat"];
-
-export default class Map extends React.Component {
+export default class Landing extends React.Component {
   constructor(props) {
     super(props);
-    const currentTime = new Date("August 22, 2018 9:00");
     this.state = {
-      currentTime,
-      region: defaultRegion,
-      selectedBlock: null,
-      parkedBlock: null,
-      dayIndexInWeek: currentTime.getDay(),
-      dayIndexInMonth: Math.floor(currentTime.getDate() / 7),
-      currentHour: currentTime.getHours()
+      login: true
     };
-    this.onRegionChangeComplete = this.onRegionChangeComplete.bind(this);
-    this.selectBlock = this.selectBlock.bind(this);
-    this.setParking = this.setParking.bind(this);
+    this.loginUser = this.loginUser.bind(this);
+    this.createUser = this.createUser.bind(this);
   }
 
-  componentDidMount() {
-    this.getParkingInfo();
-  }
+  // componentDidMount() {
+  //   this.getParkingInfo();
+  //   navigator.geolocation.getCurrentPosition(
+  //     location => this.setState(location),
+  //     err => console.log(err)
+  //   );
+  // }
 
-  onRegionChangeComplete(region) {
+  onRegionChange(region) {
     this.setState({
       region
-    }, this.getParkingInfo);
+    });
+  }
+
+  onRegionChangeComplete() {
+    this.getParkingInfo();
   }
 
   getParkingInfo() {
@@ -76,7 +63,7 @@ export default class Map extends React.Component {
     });
   }
 
-  getExpiration(block) {
+  getNextSweeping(block) {
     let { currentTime } = this.state;
     let testDate = currentTime;
     testDate.setHours(0, 0, 0, 0);
@@ -112,7 +99,7 @@ export default class Map extends React.Component {
         }`
       : null;
     const nextSweeping = selectedBlock
-      ? this.getExpiration(selectedBlock)
+      ? this.getNextSweeping(selectedBlock)
       : null;
     const selectedBlockInfo = `Current selection: ${addressInfo}
       Next sweeping: ${nextSweeping}`;
@@ -128,6 +115,7 @@ export default class Map extends React.Component {
           showsPointsOfInterest={false}
           showsBuildings={false}
           showsTraffic={false}
+          onRegionChange={this.onRegionChange}
           onRegionChangeComplete={this.onRegionChangeComplete}
         >
           {blocks &&

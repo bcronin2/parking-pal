@@ -20,8 +20,33 @@ router.get("/api/parking", (req, res) => {
   );
 });
 
-// router.get("/api/parking", (req, res) => {
-//   model.getAllBlocks((err, results) => handleResponse(err, results, res));
-// });
+router.post('/api/users/login', (req, res) => {
+  const { body: {username, password }} = req;
+  model.loginUser(username, password, (err, results) => {
+    handleResponse(err, results, res);
+  });
+});
+
+router.post('/api/users/create', (req, res) => {
+  const { body: { username, password }}  = req;
+  model.createUser(username, password, (err, results) => {
+    handleResponse(err, results, res);
+  });
+});
+
+router.patch('/api/users/:id/park', (req, res) => {
+  const { params: { id }} = req;
+  const { body: { coordinates, expiration }} = req;
+  model.parkAtLocation(id, coordinates, expiration, (err, results) => {
+    handleResponse(err, results, res);
+  });
+});
+
+router.patch('/api/users/:id/unpark', (req, res) => {
+  const { params: { id }} = req;
+  model.unpark(id, (err, results) => {
+    handleResponse(err, results, res);
+  });
+});
 
 module.exports = router;
