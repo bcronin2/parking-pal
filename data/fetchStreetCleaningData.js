@@ -32,6 +32,18 @@ const parseRow = rawRow => {
   return parsedRow;
 };
 
+const extractCoordinates = rawRow => {
+  const offset = rawRow[3] === "R" ? 0.000001 : -0.00001;
+  return rawRow[22]
+    .substring(13, rawRow[22].length - 2)
+    .split(", ")
+    .map(pair => pair.split(" "))
+    .map(pair => ({
+      longitude: parseFloat(pair[0]) + offset,
+      latitude: parseFloat(pair[1]) - offset
+    }));
+};
+
 const extractBoundaries = (coordinates, processedRow) => {
   processedRow[1] = coordinates.reduce(
     (min, coordinate) =>
@@ -57,14 +69,7 @@ const extractBoundaries = (coordinates, processedRow) => {
 
 const createRow = rawRow => {
   const processedRow = [id++];
-  const coordinates = rawRow[22]
-    .substring(13, rawRow[22].length - 2)
-    .split(", ")
-    .map(pair => pair.split(" "))
-    .map(pair => ({
-      longitude: parseFloat(pair[0]),
-      latitude: parseFloat(pair[1])
-    }));
+  const coordinates = extractCoordinates(rawRow);
   // Find leftmost/rightmost longitudes and topmost/bottom-most latitudes
   extractBoundaries(coordinates, processedRow);
   // Map remaining data fields to desired positions in row (see raw/SAMPLE_from_sfgov.csv for original fields)

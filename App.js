@@ -94,15 +94,15 @@ export default class App extends React.Component {
     let testDate = currentTime;
     testDate.setHours(0, 0, 0, 0);
     while (true) {
-      const sweepDay = days[testDate.getDay()] === block.day;
+      const sweepDay = block.days.indexOf(days[testDate.getDay()]) >= 0;
       const sweepWeek = block.weeks[Math.floor(testDate.getDate() / 7)] === "Y";
       if (sweepDay && sweepWeek) {
         nextSweeping = testDate;
         if (
           nextSweeping > currentTime ||
-          block.endhour > currentTime.getHours()
+          block.end_hour > currentTime.getHours()
         ) {
-          testDate.setHours(block.starthour);
+          testDate.setHours(block.start_hour);
           return testDate;
         }
       }
@@ -120,8 +120,8 @@ export default class App extends React.Component {
       currentHour
     } = this.state;
     const addressInfo = selectedBlock
-      ? `${selectedBlock.lf_fadd}-${selectedBlock.lf_toadd} ${
-          selectedBlock.streetname
+      ? `${selectedBlock.fadd}-${selectedBlock.toadd} ${
+          selectedBlock.street_name
         }`
       : null;
     const nextSweeping = selectedBlock
