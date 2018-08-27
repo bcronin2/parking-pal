@@ -32,6 +32,7 @@
     "pg": "^7.4.3",
     "react": "^16.3.1",
     "react-native": "~0.55.2",
+    "react-native-deprecated-custom-components": "^0.1.2",
     "react-native-maps": "^0.21.0"
   }
 }
