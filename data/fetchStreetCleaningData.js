@@ -33,14 +33,14 @@ const parseRow = rawRow => {
 };
 
 const extractCoordinates = rawRow => {
-  const offset = rawRow[3] === "R" ? 0.000001 : -0.00001;
+  const offset = rawRow[3] === "R" ? 0.00005 : -0.00005;
   return rawRow[22]
     .substring(13, rawRow[22].length - 2)
     .split(", ")
     .map(pair => pair.split(" "))
     .map(pair => ({
-      longitude: parseFloat(pair[0]) + offset,
-      latitude: parseFloat(pair[1]) - offset
+      longitude: parseFloat(pair[0]) - offset,
+      latitude: parseFloat(pair[1]) + offset
     }));
 };
 

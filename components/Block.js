@@ -28,7 +28,7 @@ module.exports = props => {
     <Polyline
       coordinates={block.coordinates}
       strokeColor={sweeping ? colors.no : colors.yes}
-      strokeWidth={block.id === selectedId ? 4 : 1}
+      strokeWidth={block.id === selectedId ? 8 : 1}
       onPress={() => pressHandler(block)}
     />
   );
