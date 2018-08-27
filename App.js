@@ -2,35 +2,39 @@ import axios from "axios";
 import _ from "lodash";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import MapView, { Marker, Overlay, PROVIDER_GOOGLE } from "react-native-maps";
+import MapView from "react-native-maps";
 
 import Block from "./components/Block.js";
 
 const parkingEndpoint = "http://localhost:3000/api/parking";
 
-const viewDimension = 0.02;
+const defaultDimension = 0.02;
 
 const defaultRegion = {
   latitude: 37.7836839,
   longitude: -122.40898609999999,
-  latitudeDelta: viewDimension,
-  longitudeDelta: viewDimension
+  latitudeDelta: defaultDimension,
+  longitudeDelta: defaultDimension
 };
+
+const days = ["Sun", "Mon", "Tues", "Wed", "Thu", "Fri", "Sat"];
 
 export default class App extends React.Component {
   constructor(props) {
     super(props);
+    const currentTime = new Date("August 22, 2018 9:00");
     this.state = {
+      currentTime,
       region: defaultRegion,
-      center: {
-        latitude: defaultRegion.latitude,
-        longitude: defaultRegion.longitude
-      }
+      selectedBlock: null,
+      parkedBlock: null,
+      dayIndexInWeek: currentTime.getDay(),
+      dayIndexInMonth: Math.floor(currentTime.getDate() / 7),
+      currentHour: currentTime.getHours()
     };
     this.onRegionChange = this.onRegionChange.bind(this);
-    this.updateParkingInfo = _.debounce(this.getParkingInfo, 500, {
-      leading: false
-    });
+    this.onRegionChangeComplete = this.onRegionChangeComplete.bind(this);
+    this.selectBlock = this.selectBlock.bind(this);
   }
 
   componentDidMount() {
@@ -42,17 +46,18 @@ export default class App extends React.Component {
   }
 
   onRegionChange(region) {
-    this.setState(
-      {
-        region,
-        center: { latitude: region.latitude, longitude: region.longitude }
-      },
-      this.updateParkingInfo
-    );
+    this.setState({
+      region
+    });
+  }
+
+  onRegionChangeComplete() {
+    this.getParkingInfo();
   }
 
   getParkingInfo() {
     const { region } = this.state;
+    const viewDimension = Math.min(defaultDimension, region.latitudeDelta);
     axios
       .get(parkingEndpoint, {
         params: {
@@ -68,34 +73,70 @@ export default class App extends React.Component {
       );
   }
 
+  selectBlock(block) {
+    this.setState({ selectedBlock: block });
+  }
+
+  getNextSweeping(block) {
+    let { currentTime } = this.state;
+    let testDate = currentTime;
+    testDate.setHours(0, 0, 0, 0);
+    while (true) {
+      const sweepDay = days[testDate.getDay()] === block.day;
+      const sweepWeek = block.weeks[Math.floor(testDate.getDate() / 7)] === "Y";
+      if (sweepDay && sweepWeek) {
+        nextSweeping = testDate;
+        if (
+          nextSweeping > currentTime ||
+          block.endhour > currentTime.getHours()
+        ) {
+          testDate.setHours(block.starthour);
+          return testDate;
+        }
+      }
+      testDate.setDate(testDate.getDate() + 1);
+    }
+  }
+
   render() {
-    const { region, center, blocks } = this.state;
-    const currentTime = new Date("August 22, 2018 9:00");
-    const dayIndexInWeek = currentTime.getDay();
-    const dayIndexInMonth = Math.floor(currentTime.getDate() / 7);
-    const hour = currentTime.getHours();
+    const {
+      blocks,
+      selectedBlock,
+      dayIndexInWeek,
+      dayIndexInMonth,
+      currentHour
+    } = this.state;
     return (
       <MapView
-        provider={PROVIDER_GOOGLE}
+        provider={null}
         style={styles.container}
         initialRegion={defaultRegion}
         showsUserLocation={true}
         showsMyLocationButton={true}
         loadingEnabled={true}
+        showsPointsOfInterest={false}
+        showsBuildings={false}
+        showsTraffic={false}
         onRegionChange={this.onRegionChange}
+        onRegionChangeComplete={this.onRegionChangeComplete}
       >
         {blocks &&
           blocks.map(block => (
             <Block
               key={block.id}
-              center={center}
               block={block}
-              currentTime={currentTime}
+              selectedId={selectedBlock && selectedBlock.id}
               dayIndexInWeek={dayIndexInWeek}
               dayIndexInMonth={dayIndexInMonth}
-              hour={hour}
+              currentHour={currentHour}
+              pressHandler={this.selectBlock}
             />
           ))}
+        <View style={styles.top}>
+          <Text style={styles.text}>
+            Press part of the map to view parking info
+          </Text>
+        </View>
       </MapView>
     );
   }
@@ -105,7 +146,28 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center"
+    alignItems: "center"
+    // justifyContent: "center"
+  },
+  top: {
+    position: "absolute",
+    width: "100%",
+    height: "10%",
+    margin: "10%",
+    display: "flex",
+    backgroundColor: "lightgrey",
+    borderRadius: 10,
+    shadowColor: "black",
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    shadowOffset: { width: 2, height: 4 }
+  },
+  text: {
+    // margin: "10%",
+    flex: 1,
+    position: "absolute",
+    top: 0,
+    fontSize: 16,
+    textAlign: "center"
   }
 });
