@@ -9,19 +9,17 @@ CREATE TABLE parking_info (
   ll_lon DOUBLE PRECISION,
   ur_lat DOUBLE PRECISION,
   ur_lon DOUBLE PRECISION,
-  day VARCHAR(10),
-  starthour INT,
-  endhour INT,
-  holidays VARCHAR(1),
+  direction VARCHAR(3),
+  days JSON,
   weeks JSON,
-  lf_fadd INT NOT NULL,
-  lf_toadd INT NOT NULL,
-  rt_fadd INT NOT NULL,
-  rt_toadd INT NOT NULL,
-  streetname VARCHAR(20) NOT NULL,
+  start_hour INT,
+  end_hour INT,
+  holidays VARCHAR(1),
+  fadd INT NOT NULL,
+  toadd INT NOT NULL,
+  street_name VARCHAR(20) NOT NULL,
   zip_code INT,
-  coordinates JSON,
-  blockside VARCHAR(10)
+  coordinates JSON
 );
 
 CREATE TABLE user_info (
@@ -35,7 +33,7 @@ CREATE TABLE user_info (
   PRIMARY KEY (id)
 );
 
-COPY parking_info FROM '/Users/benc/Desktop/MVP/data/raw/streetCleaningData.tsv' DELIMITER E'\t';
+COPY parking_info FROM '/Users/benc/Desktop/MVP/data/raw/streetCleaningData.csv' WITH DELIMITER E'|';
 
 CREATE INDEX on parking_info (ll_lon);
 CREATE INDEX on parking_info (ll_lat);

@@ -14,7 +14,7 @@
     "android": "react-native-scripts android",
     "ios": "react-native-scripts ios",
     "test": "jest",
-    "fetch-data": "node data/fetchData.js",
+    "fetch-data": "node data/fetchStreetCleaningData.js",
     "load-data": "psql < data/init.sql",
     "serve": "nodemon server/index.js"
   },
