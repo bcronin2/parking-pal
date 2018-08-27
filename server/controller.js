@@ -42,7 +42,6 @@ router.patch("/api/users/:id/park", (req, res) => {
   const {
     params: { id }
   } = req;
-  console.log(req.body);
   const {
     body: { coordinates, expiration }
   } = req;

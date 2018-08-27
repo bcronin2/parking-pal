@@ -117,7 +117,7 @@ export default class Map extends React.Component {
   }
 
   park() {
-    const { selectedBlock, selectedExpiration, currentTime } = this.state;
+    const { selectedBlock, selectedExpiration, currentTime, user } = this.state;
     const selectedCoordinates = {
       latitude: selectedBlock.ll_lat,
       longitude: selectedBlock.ll_lon
@@ -128,7 +128,7 @@ export default class Map extends React.Component {
         parkedExpiration: selectedExpiration
       },
       () => {
-        axios.patch(`${userParkingEndpoint}/${this.state.user.id}/park`, {
+        axios.patch(`${userParkingEndpoint}/${user.id}/park`, {
           coordinates: selectedCoordinates,
           expiration: Math.min(
             selectedExpiration.getTime(),
@@ -140,13 +140,16 @@ export default class Map extends React.Component {
   }
 
   unpark() {
+    const {
+      user: { id }
+    } = this.state;
     this.setState(
       {
         parkedCoordinates: null,
         parkedExpiration: null
       },
       () => {
-        axios.patch(`${userParkingEndpoint}/${this.state.user.id}/upark`);
+        axios.patch(`${userParkingEndpoint}/${id}/unpark`);
       }
     );
   }
@@ -165,12 +168,11 @@ export default class Map extends React.Component {
       const sweepWeek = block.weeks[Math.floor(testDate.getDate() / 7)] === "Y";
       if (sweepDay && sweepWeek) {
         expiration = testDate.getTime();
-        if (
-          expiration > currentTime ||
-          expiration + block.end_hour * 60 * 60 * 1000 > currentTime
-        ) {
+        if (expiration + block.start_hour * millisPerHour > currentTime) {
           testDate.setHours(block.start_hour);
           return testDate;
+        } else if (expiration + block.end_hour * millisPerHour > currentTime) {
+          return null;
         }
       }
       testDate.setDate(testDate.getDate() + 1);
@@ -194,10 +196,12 @@ export default class Map extends React.Component {
           selectedBlock.street_name
         }`
       : null;
+    const expirationInfo = selectedExpiration
+      ? `Free until ${selectedExpiration.toString().split("GMT")[0]}`
+      : "Parking prohibited";
     const selectedBlockInfo =
-      addressInfo &&
-      `${addressInfo}
-      Free until ${selectedExpiration.toString().split("GMT")[0]}`;
+      addressInfo && `${addressInfo}\n${expirationInfo}`;
+
     return (
       <View style={styles.container}>
         <MapView
@@ -223,13 +227,15 @@ export default class Map extends React.Component {
               />
             ))}
           {parkedCoordinates && (
-            <Marker title="Parked car" coordinate={parkedCoordinates} />
+            <Marker title="My car" coordinate={parkedCoordinates} />
           )}
         </MapView>
         {selectedBlock && (
           <View style={styles.top}>
             <Text style={styles.text}>{selectedBlockInfo}</Text>
-            <Button title={"Park here"} onPress={this.park} />
+            {selectedExpiration && (
+              <Button title={"Park here"} onPress={this.park} />
+            )}
           </View>
         )}
         {parkedCoordinates && (
@@ -239,16 +245,18 @@ export default class Map extends React.Component {
               {"\n"} Time remaining:{" "}
               {convertMillis(parkedExpiration - currentTime)}
             </Text>
-            <Button
-              style={styles.button}
-              title={"Go to car"}
-              onPress={this.findCar}
-            />
-            <Button
-              style={styles.button}
-              title={"Unpark"}
-              onPress={this.unpark}
-            />
+            <View style={styles.buttonGroup}>
+              <Button
+                style={styles.button}
+                title={"Go to car"}
+                onPress={this.findCar}
+              />
+              <Button
+                style={styles.button}
+                title={"Unpark"}
+                onPress={this.unpark}
+              />
+            </View>
           </View>
         )}
       </View>
@@ -275,7 +283,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: "100%",
     height: "10%",
-    margin: "10%",
+    margin: 10,
     backgroundColor: "lightgrey",
     borderRadius: 10,
     shadowColor: "black",
@@ -288,7 +296,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: "100%",
     height: "10%",
-    margin: "10%",
+    margin: 10,
     display: "flex",
     backgroundColor: "lightgrey",
     borderRadius: 10,
@@ -296,6 +304,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 8,
     shadowOffset: { width: 2, height: 4 }
+  },
+  buttonGroup: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center"
   },
   button: {
     backgroundColor: "steelblue",

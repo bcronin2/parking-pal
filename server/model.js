@@ -51,7 +51,7 @@ const parkAtLocation = (userId, coordinates, expiration, callback) => {
 };
 
 const unpark = (userId, callback) => {
-  const updateParkingStatus = `UPDATE user_info SET latitude=null, longitude=null, expiration=null WHERE id=${userId}`;
+  const updateParkingStatus = `UPDATE user_info SET latitude=${null}, longitude=${null}, expiration=${null} WHERE id=${userId}`;
   database.query(updateParkingStatus, (err, results) =>
     handleResults(err, results, callback)
   );
