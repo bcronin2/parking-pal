@@ -24,7 +24,7 @@ export default class Landing extends React.Component {
   }
 
   componentDidMount() {
-    AsyncStorage.getItem("parkingPalId").then(storedId => {
+    AsyncStorage.getItem(utils.storageKey).then(storedId => {
       if (storedId) {
         axios.get(`${utils.userStoredEndpoint}/${storedId}`).then(results => {
           const { navigation } = this.props;
@@ -43,7 +43,7 @@ export default class Landing extends React.Component {
         results => {
           const { navigation } = this.props;
           AsyncStorage.setItem(
-            "parkingPalId",
+            utils.storageKey,
             JSON.stringify(results.data[0].id)
           );
           navigation.navigate("Map", { user: results.data[0] });
