@@ -13,6 +13,7 @@ String.prototype.hashCode = function() {
 
 const userLoginEndpoint = "http://localhost:3000/api/users/login";
 const userCreateEndpoint = "http://localhost:3000/api/users/create";
+const userStoredEndpoint = "http://localhost:3000/api/users/stored";
 const backgroundImageUrl =
   "https://i0.wp.com/gifrific.com/wp-content/uploads/2015/03/Reverse-Spinning-Parralel-Park.gif?resize=425%2C219&ssl=1";
 
@@ -91,6 +92,7 @@ const getExpiration = (block, currentTime) => {
 module.exports = {
   userLoginEndpoint,
   userCreateEndpoint,
+  userStoredEndpoint,
   backgroundImageUrl,
   parkingInfoEndpoint,
   userParkingEndpoint,

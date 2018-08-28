@@ -20,6 +20,15 @@ router.get("/api/parking", (req, res) => {
   );
 });
 
+router.get("/api/users/stored/:id", (req, res) => {
+  const {
+    params: { id }
+  } = req;
+  model.getUser(id, (err, results) => {
+    handleResponse(err, results, res);
+  });
+});
+
 router.post("/api/users/login", (req, res) => {
   const {
     body: { username, password }

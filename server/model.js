@@ -23,6 +23,14 @@ const getBlocksForRegion = (
   );
 };
 
+const getUser = (id, callback) => {
+  const selectUser = `SELECT * FROM user_info WHERE id=${id}`;
+  database.query(selectUser, (err, results) => {
+    if (!results.rows.length) err = new Error("Bad id");
+    handleResults(err, results, callback);
+  });
+};
+
 const loginUser = (username, password, callback) => {
   const selectUser = `SELECT * FROM user_info WHERE username='${username}' AND password='${password}'`;
   database.query(selectUser, (err, results) => {
@@ -64,6 +72,7 @@ const unpark = (userId, callback) => {
 
 module.exports = {
   getBlocksForRegion,
+  getUser,
   loginUser,
   createUser,
   parkAtLocation,

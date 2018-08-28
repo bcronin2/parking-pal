@@ -1,6 +1,13 @@
 import axios from "axios";
 import React from "react";
-import { Button, ImageBackground, Text, TextInput, View } from "react-native";
+import {
+  AsyncStorage,
+  Button,
+  ImageBackground,
+  Text,
+  TextInput,
+  View
+} from "react-native";
 
 import utils from "./utils.js";
 import styles from "./styles.js";
@@ -16,6 +23,17 @@ export default class Landing extends React.Component {
     this.createUser = this.createUser.bind(this);
   }
 
+  componentDidMount() {
+    AsyncStorage.getItem("parkingPalId").then(storedId => {
+      if (storedId) {
+        axios.get(`${utils.userStoredEndpoint}/${storedId}`).then(results => {
+          const { navigation } = this.props;
+          navigation.navigate("Map", { user: results.data[0] });
+        });
+      }
+    });
+  }
+
   validateUser(endpoint, errorMessage) {
     let { username, password } = this.state;
     username = username.toLowerCase();
@@ -24,6 +42,10 @@ export default class Landing extends React.Component {
       axios.post(endpoint, { username, password }).then(
         results => {
           const { navigation } = this.props;
+          AsyncStorage.setItem(
+            "parkingPalId",
+            JSON.stringify(results.data[0].id)
+          );
           navigation.navigate("Map", { user: results.data[0] });
         },
         err => {
