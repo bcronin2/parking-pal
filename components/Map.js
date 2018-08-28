@@ -4,6 +4,7 @@ import { Button, Text, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 
 import Block from "./Block.js";
+import ParkingStatus from "./ParkingStatus";
 import utils from "./utils.js";
 import styles from "./styles.js";
 
@@ -82,6 +83,10 @@ export default class Map extends React.Component {
       currentTime,
       userId
     } = this.state;
+    const expiration = Math.min(
+      selectedExpiration.getTime(),
+      currentTime + utils.maxParking
+    );
     const selectedCoordinates = {
       latitude: selectedBlock.ll_lat,
       longitude: selectedBlock.ll_lon
@@ -89,17 +94,14 @@ export default class Map extends React.Component {
     this.setState(
       {
         parkedCoordinates: selectedCoordinates,
-        parkedExpiration: selectedExpiration,
+        parkedExpiration: expiration,
         parkedNeighborhood: selectedBlock.neighborhood
       },
       () => {
         axios
           .patch(`${utils.userParkingEndpoint}/${userId}/park`, {
+            expiration,
             coordinates: selectedCoordinates,
-            expiration: Math.min(
-              selectedExpiration.getTime(),
-              currentTime + utils.maxParking
-            ),
             neighborhood: selectedBlock.neighborhood
           })
           .then(this.clearSelection);
@@ -188,24 +190,13 @@ export default class Map extends React.Component {
           </View>
         )}
         {parkedCoordinates && (
-          <View style={styles.bottom}>
-            <Text style={styles.text}>
-              Your are parked in {parkedNeighborhood}.{"\n"} Time remaining:{" "}
-              {utils.convertMillis(parkedExpiration - currentTime)}
-            </Text>
-            <View style={styles.row}>
-              <Button
-                style={styles.button}
-                title={"Go to car"}
-                onPress={this.findCar}
-              />
-              <Button
-                style={styles.button}
-                title={"Unpark"}
-                onPress={this.unpark}
-              />
-            </View>
-          </View>
+          <ParkingStatus
+            currentTime={currentTime}
+            parkedExpiration={parkedExpiration}
+            parkedNeighborhood={parkedNeighborhood}
+            findCar={this.findCar}
+            unpark={this.unpark}
+          />
         )}
       </View>
     );
