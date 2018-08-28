@@ -12,7 +12,7 @@
     "start": "react-native-scripts start",
     "eject": "react-native-scripts eject",
     "android": "react-native-scripts android",
-    "ios": "react-native-scripts ios",
+    "ios": "react-native run-ios",
     "test": "jest",
     "fetch-data": "node data/fetchStreetCleaningData.js",
     "load-data": "psql < data/init.sql",
@@ -23,7 +23,6 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "datejs": "^1.0.0-rc3",
     "expo": "^27.0.1",
     "fs": "0.0.1-security",
     "lodash": "^4.17.10",
@@ -33,7 +32,6 @@
     "pg": "^7.4.3",
     "react": "^16.3.1",
     "react-native": "~0.55.2",
-    "react-native-deprecated-custom-components": "^0.1.2",
     "react-native-maps": "^0.21.0",
     "react-navigation": "^2.12.1"
   }
