@@ -143,7 +143,6 @@ export default class Map extends React.Component {
       parkedExpiration,
       parkedNeighborhood
     } = this.state;
-    console.log(utils.getSquareForRegion(region));
     const addressInfo = selectedBlock
       ? `${selectedBlock.fadd}-${selectedBlock.toadd} ${
           selectedBlock.street_name
