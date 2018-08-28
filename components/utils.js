@@ -60,6 +60,28 @@ const getBoundary = region => {
   };
 };
 
+const getSquareForRegion = region => {
+  const viewDimension = Math.min(defaultDimension, region.latitudeDelta);
+  return [
+    {
+      latitude: region.latitude - 0.5 * viewDimension,
+      longitude: region.longitude - 0.5 * viewDimension
+    },
+    {
+      latitude: region.latitude - 0.5 * viewDimension,
+      longitude: region.longitude + 0.5 * viewDimension
+    },
+    {
+      latitude: region.latitude + 0.5 * viewDimension,
+      longitude: region.longitude + 0.5 * viewDimension
+    },
+    {
+      latitude: region.latitude + 0.5 * viewDimension,
+      longitude: region.longitude - 0.5 * viewDimension
+    }
+  ];
+};
+
 const millisPerMinute = 60 * 1000;
 const millisPerHour = 60 * millisPerMinute;
 const maxParking = 72 * millisPerHour;
@@ -105,6 +127,7 @@ module.exports = {
   userParkingEndpoint,
   defaultRegion,
   extractCoordinates,
+  getSquareForRegion,
   millisPerMinute,
   millisPerHour,
   convertMillis,

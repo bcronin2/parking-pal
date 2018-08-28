@@ -1,7 +1,7 @@
 import axios from "axios";
 import React from "react";
 import { Button, Text, View } from "react-native";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, Polygon } from "react-native-maps";
 
 import Block from "./Block.js";
 import ParkingStatus from "./ParkingStatus";
@@ -135,6 +135,7 @@ export default class Map extends React.Component {
       dayIndexInWeek,
       dayIndexInMonth,
       currentHour,
+      region,
       blocks,
       selectedBlock,
       selectedExpiration,
@@ -142,13 +143,14 @@ export default class Map extends React.Component {
       parkedExpiration,
       parkedNeighborhood
     } = this.state;
+    console.log(utils.getSquareForRegion(region));
     const addressInfo = selectedBlock
       ? `${selectedBlock.fadd}-${selectedBlock.toadd} ${
           selectedBlock.street_name
         }`
       : null;
     const expirationInfo = selectedExpiration
-      ? `Next clean: ${selectedExpiration.toString().split("GMT")[0]}`
+      ? `Next cleaning: ${selectedExpiration.toString().split("GMT")[0]}`
       : "Parking prohibited";
     const selectedBlockInfo =
       addressInfo && `${addressInfo}\n${expirationInfo}`;
@@ -177,6 +179,7 @@ export default class Map extends React.Component {
                 pressHandler={this.selectBlock}
               />
             ))}
+          <Polygon coordinates={utils.getSquareForRegion(region)} />
           {parkedCoordinates && (
             <Marker title="My car" coordinate={parkedCoordinates} />
           )}
