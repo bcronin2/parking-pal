@@ -26,12 +26,12 @@ const colors = {
   no: "#f00"
 };
 
-const getParkedCoordinates = user => {
+const extractCoordinates = coordinates => {
   return (
-    (user.latitude &&
-      user.longitude && {
-        latitude: user.latitude,
-        longitude: user.longitude
+    (coordinates.latitude &&
+      coordinates.longitude && {
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude
       }) ||
     null
   );
@@ -41,6 +41,15 @@ const millisPerMinute = 60 * 1000;
 const millisPerHour = 60 * millisPerMinute;
 const maxParking = 72 * millisPerHour;
 
+const defaultDimension = 0.02;
+
+const defaultRegion = {
+  latitude: 0,
+  longitude: 0,
+  latitudeDelta: defaultDimension,
+  longitudeDelta: 0.5 * defaultDimension
+};
+
 const convertMillis = millis => {
   let hours = Math.floor(millis / millisPerHour);
   millis %= millisPerHour;
@@ -48,15 +57,6 @@ const convertMillis = millis => {
   millis %= millisPerMinute;
   let seconds = Math.floor(millis / 1000);
   return `${hours}hr, ${minutes}min, ${seconds}s`;
-};
-
-const defaultDimension = 0.02;
-
-const defaultRegion = {
-  latitude: 37.7836839,
-  longitude: -122.40898609999999,
-  latitudeDelta: defaultDimension,
-  longitudeDelta: 0.5 * defaultDimension
 };
 
 const getBoundary = region => {
@@ -99,9 +99,9 @@ module.exports = {
   millisPerMinute,
   millisPerHour,
   maxParking,
-  convertMillis,
   defaultRegion,
-  getParkedCoordinates,
+  convertMillis,
+  extractCoordinates,
   getBoundary,
   getExpiration
 };

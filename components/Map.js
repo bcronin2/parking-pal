@@ -27,7 +27,7 @@ export default class Map extends React.Component {
       region: utils.defaultRegion,
       selectedBlock: null,
       selectedExpiration: null,
-      parkedCoordinates: utils.getParkedCoordinates(user),
+      parkedCoordinates: utils.extractCoordinates(user),
       parkedExpiration: user.expiration
     };
     this.bindFunctions();
@@ -44,11 +44,17 @@ export default class Map extends React.Component {
   }
 
   componentDidMount() {
-    const { parkedCoordinates } = this.state;
-    if (parkedCoordinates) {
-    } else {
-      this.getParkingInfo();
-    }
+    navigator.geolocation.getCurrentPosition(position => {
+      // const lat = (position.coords.latitude)
+      // const long = (position.coords.longitude)
+      // const region = {
+      //   latitude: lat,
+      //   longitude: long,
+      //   latitudeDelta: utils.defaultDimension,
+      //   longitudeDelta: utils.defaultDimension
+      // }
+      this._map.animateToCoordinate(position.coords, 2);
+    });
   }
 
   onRegionChange(region) {
