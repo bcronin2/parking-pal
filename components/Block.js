@@ -1,13 +1,7 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import MapView, { Polyline, PROVIDER_GOOGLE } from "react-native-maps";
+import { Polyline } from "react-native-maps";
 
-const colors = {
-  yes: "#0f0",
-  no: "#f00"
-};
-
-const days = ["Sun", "Mon", "Tues", "Wed", "Thu", "Fri", "Sat"];
+import utils from "./utils.js";
 
 module.exports = props => {
   const {
@@ -19,7 +13,7 @@ module.exports = props => {
     pressHandler
   } = props;
 
-  const sweepDay = block.days.indexOf(days[dayIndexInWeek]) >= 0;
+  const sweepDay = block.days.indexOf(utils.days[dayIndexInWeek]) >= 0;
   const sweepWeek = block.weeks[dayIndexInMonth] === "Y";
   const sweepHour =
     block.start_hour <= currentHour && block.end_hour > currentHour;
@@ -27,7 +21,7 @@ module.exports = props => {
   return (
     <Polyline
       coordinates={block.coordinates}
-      strokeColor={sweeping ? colors.no : colors.yes}
+      strokeColor={sweeping ? utils.colors.no : utils.colors.yes}
       strokeWidth={block.id === selectedId ? 8 : 1}
       onPress={() => pressHandler(block)}
     />

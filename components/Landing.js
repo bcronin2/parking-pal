@@ -2,15 +2,8 @@ import axios from "axios";
 import React from "react";
 import { Button, ImageBackground, Text, TextInput, View } from "react-native";
 
+import utils from "./utils.js";
 import styles from "./styles.js";
-
-require("./utils.js");
-
-const userLoginEndpoint = "http://localhost:3000/api/users/login";
-const userCreateEndpoint = "http://localhost:3000/api/users/create";
-
-const backgroundImageUrl =
-  "https://i0.wp.com/gifrific.com/wp-content/uploads/2015/03/Reverse-Spinning-Parralel-Park.gif?resize=425%2C219&ssl=1";
 
 export default class Landing extends React.Component {
   constructor(props) {
@@ -44,14 +37,14 @@ export default class Landing extends React.Component {
 
   loginUser() {
     this.validateUser(
-      userLoginEndpoint,
+      utils.userLoginEndpoint,
       "Oops! There was something wrong with your username or password."
     );
   }
 
   createUser() {
     this.validateUser(
-      userCreateEndpoint,
+      utils.userCreateEndpoint,
       "Oops! It looks like that user already exists."
     );
   }
@@ -60,7 +53,7 @@ export default class Landing extends React.Component {
     return (
       <ImageBackground
         style={styles.container}
-        source={{ uri: backgroundImageUrl }}
+        source={{ uri: utils.backgroundImageUrl }}
       >
         <Text style={styles.title}>Welcome to ParkingPal</Text>
         <View style={styles.form}>

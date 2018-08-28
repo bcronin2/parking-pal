@@ -68,6 +68,6 @@ module.exports = StyleSheet.create({
     fontSize: 2 * unit,
     width: 16 * unit
   }),
-  top: panel(),
+  top: _.extend(panel(), { top: 0.5 * unit }),
   bottom: _.extend(panel(), { bottom: 1.5 * unit })
 });
