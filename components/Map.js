@@ -178,9 +178,16 @@ export default class Map extends React.Component {
                 pressHandler={this.selectBlock}
               />
             ))}
-          <Polygon coordinates={utils.getSquareForRegion(region)} />
+          <Polygon
+            coordinates={utils.getSquareForRegion(region)}
+            strokeColor="#ccc"
+          />
           {parkedCoordinates && (
-            <Marker title="My car" coordinate={parkedCoordinates} />
+            <Marker
+              title="My car"
+              coordinate={parkedCoordinates}
+              image={require("../assets/car-icon.png")}
+            />
           )}
         </MapView>
         {selectedBlock && (
