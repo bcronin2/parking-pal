@@ -88,16 +88,17 @@ const createRow = rawRow => {
   // from/to hours
   processedRow[8] = parseInt(rawRow[6]);
   processedRow[9] = parseInt(rawRow[14]);
-  //holidays
+  // holidays
   processedRow[10] = rawRow[7];
   // from/to addresses
   processedRow[11] = rawRow[3] === "R" ? rawRow[11] : rawRow[8];
   processedRow[12] = rawRow[3] === "R" ? rawRow[12] : rawRow[9];
-  // street, zip
+  // street, zip, neighborhood
   processedRow[13] = rawRow[13];
   processedRow[14] = rawRow[21];
+  processedRow[15] = rawRow[10];
   // coords/block side
-  processedRow[15] = JSON.stringify(coordinates);
+  processedRow[16] = JSON.stringify(coordinates);
   // store block data in blocks object
   blocks[rawRow[22] + rawRow[3]] = processedRow;
 };

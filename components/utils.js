@@ -44,8 +44,8 @@ const maxParking = 72 * millisPerHour;
 const defaultDimension = 0.02;
 
 const defaultRegion = {
-  latitude: 0,
-  longitude: 0,
+  latitude: 37.7836839,
+  longitude: -122.40898609999999,
   latitudeDelta: defaultDimension,
   longitudeDelta: 0.5 * defaultDimension
 };

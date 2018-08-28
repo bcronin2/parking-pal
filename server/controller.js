@@ -43,11 +43,17 @@ router.patch("/api/users/:id/park", (req, res) => {
     params: { id }
   } = req;
   const {
-    body: { coordinates, expiration }
+    body: { coordinates, expiration, neighborhood }
   } = req;
-  model.parkAtLocation(id, coordinates, expiration, (err, results) => {
-    handleResponse(err, results, res);
-  });
+  model.parkAtLocation(
+    id,
+    coordinates,
+    expiration,
+    neighborhood,
+    (err, results) => {
+      handleResponse(err, results, res);
+    }
+  );
 });
 
 router.patch("/api/users/:id/unpark", (req, res) => {

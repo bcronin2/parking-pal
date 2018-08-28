@@ -10,13 +10,7 @@ import styles from "./styles.js";
 export default class Map extends React.Component {
   constructor(props) {
     super(props);
-    const {
-      navigation: {
-        state: {
-          params: { user }
-        }
-      }
-    } = props;
+    const user = props.navigation.state.params.user || utils.defaultRegion;
     const now = new Date("August 22, 2018 9:00");
     this.state = {
       userId: user.id,
@@ -28,7 +22,8 @@ export default class Map extends React.Component {
       selectedBlock: null,
       selectedExpiration: null,
       parkedCoordinates: utils.extractCoordinates(user),
-      parkedExpiration: user.expiration
+      parkedExpiration: user.expiration,
+      parkedNeighborhood: user.neighborhood
     };
     this.bindFunctions();
   }
@@ -44,17 +39,10 @@ export default class Map extends React.Component {
   }
 
   componentDidMount() {
-    navigator.geolocation.getCurrentPosition(position => {
-      // const lat = (position.coords.latitude)
-      // const long = (position.coords.longitude)
-      // const region = {
-      //   latitude: lat,
-      //   longitude: long,
-      //   latitudeDelta: utils.defaultDimension,
-      //   longitudeDelta: utils.defaultDimension
-      // }
-      this._map.animateToCoordinate(position.coords, 2);
-    });
+    navigator.geolocation.getCurrentPosition(
+      position => this._map.animateToCoordinate(position.coords, 2),
+      this.getParkingInfo
+    );
   }
 
   onRegionChange(region) {
@@ -101,7 +89,8 @@ export default class Map extends React.Component {
     this.setState(
       {
         parkedCoordinates: selectedCoordinates,
-        parkedExpiration: selectedExpiration
+        parkedExpiration: selectedExpiration,
+        parkedNeighborhood: selectedBlock.neighborhood
       },
       () => {
         axios
@@ -110,7 +99,8 @@ export default class Map extends React.Component {
             expiration: Math.min(
               selectedExpiration.getTime(),
               currentTime + utils.maxParking
-            )
+            ),
+            neighborhood: selectedBlock.neighborhood
           })
           .then(this.clearSelection);
       }
@@ -122,7 +112,8 @@ export default class Map extends React.Component {
     this.setState(
       {
         parkedCoordinates: null,
-        parkedExpiration: null
+        parkedExpiration: null,
+        parkedNeighborhood: null
       },
       () => {
         axios.patch(`${utils.userParkingEndpoint}/${userId}/unpark`);
@@ -146,7 +137,8 @@ export default class Map extends React.Component {
       selectedBlock,
       selectedExpiration,
       parkedCoordinates,
-      parkedExpiration
+      parkedExpiration,
+      parkedNeighborhood
     } = this.state;
     const addressInfo = selectedBlock
       ? `${selectedBlock.fadd}-${selectedBlock.toadd} ${
@@ -198,8 +190,7 @@ export default class Map extends React.Component {
         {parkedCoordinates && (
           <View style={styles.bottom}>
             <Text style={styles.text}>
-              Your car is currently parked.
-              {"\n"} Time remaining:{" "}
+              Your are parked in {parkedNeighborhood}.{"\n"} Time remaining:{" "}
               {utils.convertMillis(parkedExpiration - currentTime)}
             </Text>
             <View style={styles.row}>

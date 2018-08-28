@@ -19,6 +19,7 @@ CREATE TABLE parking_info (
   toadd INT NOT NULL,
   street_name VARCHAR(20) NOT NULL,
   zip_code INT,
+  neighborhood VARCHAR(50),
   coordinates JSON
 );
 
@@ -29,8 +30,9 @@ CREATE TABLE user_info (
   latitude DOUBLE PRECISION DEFAULT NULL,
   longitude DOUBLE PRECISION DEFAULT NULL,
   expiration BIGINT DEFAULT NULL,
+  neighborhood VARCHAR(50) DEFAULT NULL,
   PRIMARY KEY (id)
-  );
+);
 
 COPY parking_info FROM '/Users/benc/Desktop/MVP/data/raw/streetCleaningData.csv' WITH DELIMITER E'|';
 

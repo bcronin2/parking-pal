@@ -38,20 +38,25 @@ const createUser = (username, password, callback) => {
   );
 };
 
-const parkAtLocation = (userId, coordinates, expiration, callback) => {
-  console.log(expiration);
+const parkAtLocation = (
+  userId,
+  coordinates,
+  expiration,
+  neighborhood,
+  callback
+) => {
   const updateParkingStatus = `UPDATE user_info SET latitude=${
     coordinates.latitude
   }, longitude=${
     coordinates.longitude
-  }, expiration=${expiration} WHERE id=${userId}`;
+  }, expiration=${expiration}, neighborhood='${neighborhood}' WHERE id=${userId}`;
   database.query(updateParkingStatus, (err, results) =>
     handleResults(err, results, callback)
   );
 };
 
 const unpark = (userId, callback) => {
-  const updateParkingStatus = `UPDATE user_info SET latitude=${null}, longitude=${null}, expiration=${null} WHERE id=${userId}`;
+  const updateParkingStatus = `UPDATE user_info SET latitude=${null}, longitude=${null}, expiration=${null}, neighborhood=${null} WHERE id=${userId}`;
   database.query(updateParkingStatus, (err, results) =>
     handleResults(err, results, callback)
   );
