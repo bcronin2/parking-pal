@@ -157,7 +157,7 @@ export default class Map extends React.Component {
       <View style={styles.container}>
         <MapView
           ref={map => (this._map = map)}
-          provider={"google"}
+          provider={null}
           style={styles.map}
           initialRegion={utils.defaultRegion}
           loadingEnabled={true}
