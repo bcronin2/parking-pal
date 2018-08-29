@@ -1,4 +1,3 @@
-const router = require("express").Router();
 const model = require("./model.js");
 
 const handleResponse = (err, results, res) => {
