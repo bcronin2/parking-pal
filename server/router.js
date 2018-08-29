@@ -7,16 +7,16 @@ const handleResponse = (err, results, res) => {
   res.send(err || results);
 };
 
-router.get(controller.getParkingInfo);
+router.get("/api/parking", controller.getParkingInfo);
 
-router.get(controller.getExistingUser);
+router.get("/api/users/stored/:id", controller.getExistingUser);
 
-router.post(controller.loginUser);
+router.post("/api/users/login", controller.loginUser);
 
-router.post(controller.createUser);
+router.post("/api/users/create", controller.createUser);
 
-router.patch(controller.parkUser);
+router.patch("/api/users/:id/park", controller.parkUser);
 
-router.patch(controller.unparkUser);
+router.patch("/api/users/:id/unpark", controller.unparkUser);
 
 module.exports = router;
