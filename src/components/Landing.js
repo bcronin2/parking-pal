@@ -1,4 +1,5 @@
 import axios from "axios";
+import CryptoJS from "crypto-js";
 import React from "react";
 import {
   AsyncStorage,
@@ -43,7 +44,7 @@ export default class Landing extends React.Component {
   validateUser(endpoint, errorMessage) {
     let { username, password } = this.state;
     username = username.toLowerCase();
-    password = password.hashCode();
+    password = CryptoJS.SHA256(password).toString();
     if (username && password) {
       axios.post(endpoint, { username, password }).then(
         results => {

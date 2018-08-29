@@ -26,7 +26,7 @@ CREATE TABLE parking_info (
 CREATE TABLE user_info (
   id SERIAL NOT NULL,
   username VARCHAR(20) UNIQUE NOT NULL,
-  password VARCHAR(50) NOT NULL,
+  password VARCHAR(100) NOT NULL,
   latitude DOUBLE PRECISION DEFAULT NULL,
   longitude DOUBLE PRECISION DEFAULT NULL,
   expiration BIGINT DEFAULT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE user_info (
   PRIMARY KEY (id)
 );
 
-COPY parking_info FROM '/Users/benc/Desktop/MVP/data/raw/streetCleaningData.csv' WITH DELIMITER E'|';
+COPY parking_info FROM '/Users/benc/Dropbox/Hack Reactor/MVP/data/raw/streetCleaningData.csv' WITH DELIMITER E'|';
 
 CREATE INDEX on parking_info (ll_lon);
 CREATE INDEX on parking_info (ll_lat);
