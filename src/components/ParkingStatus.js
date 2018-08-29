@@ -1,8 +1,8 @@
 import React from "react";
 import { Button, Text, View } from "react-native";
 
-import utils from "./utils.js";
-import styles from "./styles.js";
+import timing from "../services/timing.js";
+import styles from "../styles/main.js";
 
 export default class ParkingStatus extends React.Component {
   constructor(props) {
@@ -15,11 +15,12 @@ export default class ParkingStatus extends React.Component {
   }
 
   componentDidMount() {
-    this.updateProcess = setInterval(this.updateTime, 1000);
+    this.setState({ updateProcess: setInterval(this.updateTime, 1000) });
   }
 
   componentWillUnmount() {
-    clearInterval(this.updateProcess);
+    const { updateProcess } = this.state;
+    clearInterval(updateProcess);
   }
 
   updateTime() {
@@ -35,11 +36,14 @@ export default class ParkingStatus extends React.Component {
       unpark
     } = this.props;
     const { currentTime } = this.state;
+    const { timeRemaining } = timing.convertMillis(
+      parkedExpiration - currentTime
+    );
     return (
       <View style={styles.bottom}>
         <Text style={styles.text}>
           Your are parked in {parkedNeighborhood}.{"\n"} Time remaining:{" "}
-          {utils.convertMillis(parkedExpiration - currentTime)}
+          {timeRemaining}
         </Text>
         <View style={styles.row}>
           <Button style={styles.button} title={"Go to car"} onPress={findCar} />

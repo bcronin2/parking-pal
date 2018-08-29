@@ -5,24 +5,28 @@ import MapView, { Marker, Polygon } from "react-native-maps";
 
 import Block from "./Block.js";
 import ParkingStatus from "./ParkingStatus";
-import utils from "./utils.js";
-import styles from "./styles.js";
+import timing from "../services/timing.js";
+import coordinates from "../services/coordinates.js";
+import endpoints from "../services/endpoints.js";
+import styles from "../styles/main.js";
+
+const carIcon = require("../assets/car-icon.png");
 
 export default class Map extends React.Component {
   constructor(props) {
     super(props);
-    const user = props.navigation.state.params.user || utils.defaultRegion;
+    const user = props.navigation.state.params.user;
     const now = new Date("August 22, 2018 9:00");
     this.state = {
       userId: user.id,
       currentTime: now.getTime(),
       dayIndexInWeek: now.getDay(),
-      dayIndexInMonth: Math.floor(now.getDate() / 7),
+      weekIndexInMonth: Math.floor(now.getDate() / 7),
       currentHour: now.getHours(),
-      region: utils.defaultRegion,
+      region: coordinates.defaultRegion,
       selectedBlock: null,
       selectedExpiration: null,
-      parkedCoordinates: utils.extractCoordinates(user),
+      parkedCoordinates: coordinates.extractCoordinates(user),
       parkedExpiration: user.expiration,
       parkedNeighborhood: user.neighborhood
     };
@@ -57,8 +61,8 @@ export default class Map extends React.Component {
   getParkingInfo() {
     const { region } = this.state;
     axios
-      .get(utils.parkingInfoEndpoint, {
-        params: utils.getBoundary(region)
+      .get(endpoints.parkingInfoEndpoint, {
+        params: coordinates.getBoundary(region)
       })
       .then(
         results => this.setState({ blocks: results.data }),
@@ -68,7 +72,7 @@ export default class Map extends React.Component {
 
   selectBlock(selectedBlock) {
     const { currentTime } = this.state;
-    const selectedExpiration = utils.getExpiration(selectedBlock, currentTime);
+    const selectedExpiration = timing.getExpiration(selectedBlock, currentTime);
     this.setState({ selectedBlock, selectedExpiration });
   }
 
@@ -85,7 +89,7 @@ export default class Map extends React.Component {
     } = this.state;
     const expiration = Math.min(
       selectedExpiration.getTime(),
-      currentTime + utils.maxParking
+      currentTime + timing.maxParking
     );
     const selectedCoordinates = {
       latitude: selectedBlock.ll_lat,
@@ -99,7 +103,7 @@ export default class Map extends React.Component {
       },
       () => {
         axios
-          .patch(`${utils.userParkingEndpoint}/${userId}/park`, {
+          .patch(`${endpoints.userParkingEndpoint}/${userId}/park`, {
             expiration,
             coordinates: selectedCoordinates,
             neighborhood: selectedBlock.neighborhood
@@ -118,7 +122,7 @@ export default class Map extends React.Component {
         parkedNeighborhood: null
       },
       () => {
-        axios.patch(`${utils.userParkingEndpoint}/${userId}/unpark`);
+        axios.patch(`${endpoints.userParkingEndpoint}/${userId}/unpark`);
       }
     );
   }
@@ -133,7 +137,7 @@ export default class Map extends React.Component {
     const {
       currentTime,
       dayIndexInWeek,
-      dayIndexInMonth,
+      weekIndexInMonth,
       currentHour,
       region,
       blocks,
@@ -149,7 +153,7 @@ export default class Map extends React.Component {
         }`
       : null;
     const expirationInfo = selectedExpiration
-      ? `Next cleaning: ${selectedExpiration.toString().split("GMT")[0]}`
+      ? `Next cleaning: ${timing.parseDate(selectedExpiration)}`
       : "Parking prohibited";
     const selectedBlockInfo =
       addressInfo && `${addressInfo}\n${expirationInfo}`;
@@ -160,7 +164,7 @@ export default class Map extends React.Component {
           ref={map => (this._map = map)}
           provider={null}
           style={styles.map}
-          initialRegion={utils.defaultRegion}
+          initialRegion={coordinates.defaultRegion}
           loadingEnabled={true}
           showsUserLocation={true}
           onRegionChange={this.onRegionChange}
@@ -173,20 +177,20 @@ export default class Map extends React.Component {
                 block={block}
                 selectedId={selectedBlock && selectedBlock.id}
                 dayIndexInWeek={dayIndexInWeek}
-                dayIndexInMonth={dayIndexInMonth}
+                weekIndexInMonth={weekIndexInMonth}
                 currentHour={currentHour}
                 pressHandler={this.selectBlock}
               />
             ))}
           <Polygon
-            coordinates={utils.getSquareForRegion(region)}
+            coordinates={coordinates.getSquareForRegion(region)}
             strokeColor="#ccc"
           />
           {parkedCoordinates && (
             <Marker
               title="My car"
               coordinate={parkedCoordinates}
-              image={require("../assets/car-icon.png")}
+              image={carIcon}
             />
           )}
         </MapView>

@@ -1,8 +1,8 @@
 import React from "react";
 import { createStackNavigator } from "react-navigation";
 
-import LandingScreen from "./components/Landing.js";
-import MapScreen from "./components/Map.js";
+import LandingScreen from "./src/components/Landing.js";
+import MapScreen from "./src/components/Map.js";
 
 const Navigation = createStackNavigator({
   Landing: {

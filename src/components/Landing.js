@@ -9,8 +9,12 @@ import {
   View
 } from "react-native";
 
-import utils from "./utils.js";
-import styles from "./styles.js";
+import endpoints from "../services/endpoints.js";
+import styles from "../styles/main.js";
+
+const storageKey = "parkingPalId";
+const backgroundImageUrl =
+  "https://i0.wp.com/gifrific.com/wp-content/uploads/2015/03/Reverse-Spinning-Parralel-Park.gif?resize=425%2C219&ssl=1";
 
 export default class Landing extends React.Component {
   constructor(props) {
@@ -24,12 +28,14 @@ export default class Landing extends React.Component {
   }
 
   componentDidMount() {
-    AsyncStorage.getItem(utils.storageKey).then(storedId => {
+    AsyncStorage.getItem(storageKey).then(storedId => {
       if (storedId) {
-        axios.get(`${utils.userStoredEndpoint}/${storedId}`).then(results => {
-          const { navigation } = this.props;
-          navigation.navigate("Map", { user: results.data[0] });
-        });
+        axios
+          .get(`${endpoints.userStoredEndpoint}/${storedId}`)
+          .then(results => {
+            const { navigation } = this.props;
+            navigation.navigate("Map", { user: results.data[0] });
+          });
       }
     });
   }
@@ -42,10 +48,7 @@ export default class Landing extends React.Component {
       axios.post(endpoint, { username, password }).then(
         results => {
           const { navigation } = this.props;
-          AsyncStorage.setItem(
-            utils.storageKey,
-            JSON.stringify(results.data[0].id)
-          );
+          AsyncStorage.setItem(storageKey, JSON.stringify(results.data[0].id));
           navigation.navigate("Map", { user: results.data[0] });
         },
         err => {
@@ -59,14 +62,14 @@ export default class Landing extends React.Component {
 
   loginUser() {
     this.validateUser(
-      utils.userLoginEndpoint,
+      endpoints.userLoginEndpoint,
       "Oops! There was something wrong with your username or password."
     );
   }
 
   createUser() {
     this.validateUser(
-      utils.userCreateEndpoint,
+      endpoints.userCreateEndpoint,
       "Oops! It looks like that user already exists."
     );
   }
@@ -75,7 +78,7 @@ export default class Landing extends React.Component {
     return (
       <ImageBackground
         style={styles.container}
-        source={{ uri: utils.backgroundImageUrl }}
+        source={{ uri: backgroundImageUrl }}
       >
         <Text style={styles.title}>Welcome to ParkingPal</Text>
         <View style={styles.form}>
