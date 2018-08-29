@@ -7,14 +7,12 @@ import styles from "../styles/main.js";
 export default class ParkingStatus extends React.Component {
   constructor(props) {
     super(props);
-    const { currentTime } = props;
-    this.state = {
-      currentTime
-    };
+    this.state = { timeRemaining: this.getTimeRemaining() };
     this.updateTime = this.updateTime.bind(this);
   }
 
   componentDidMount() {
+    this.updateTime();
     this.setState({ updateProcess: setInterval(this.updateTime, 1000) });
   }
 
@@ -24,21 +22,19 @@ export default class ParkingStatus extends React.Component {
   }
 
   updateTime() {
-    const { currentTime } = this.state;
-    this.setState({ currentTime: currentTime + 1000 });
+    this.setState({
+      timeRemaining: this.getTimeRemaining()
+    });
+  }
+
+  getTimeRemaining() {
+    const { parkedExpiration } = this.props;
+    return timing.convertMillis(parkedExpiration - new Date().getTime());
   }
 
   render() {
-    const {
-      parkedExpiration,
-      parkedNeighborhood,
-      findCar,
-      unpark
-    } = this.props;
-    const { currentTime } = this.state;
-    const { timeRemaining } = timing.convertMillis(
-      parkedExpiration - currentTime
-    );
+    const { parkedNeighborhood, findCar, unpark } = this.props;
+    const { timeRemaining } = this.state;
     return (
       <View style={styles.bottom}>
         <Text style={styles.text}>

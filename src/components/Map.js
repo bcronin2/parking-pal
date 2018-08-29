@@ -16,13 +16,8 @@ export default class Map extends React.Component {
   constructor(props) {
     super(props);
     const user = props.navigation.state.params.user;
-    const now = new Date("August 22, 2018 9:00");
     this.state = {
       userId: user.id,
-      currentTime: now.getTime(),
-      dayIndexInWeek: now.getDay(),
-      weekIndexInMonth: Math.floor(now.getDate() / 7),
-      currentHour: now.getHours(),
       region: coordinates.defaultRegion,
       selectedBlock: null,
       selectedExpiration: null,
@@ -30,10 +25,6 @@ export default class Map extends React.Component {
       parkedExpiration: user.expiration,
       parkedNeighborhood: user.neighborhood
     };
-    this.bindFunctions();
-  }
-
-  bindFunctions() {
     this.onRegionChange = this.onRegionChange.bind(this);
     this.onRegionChangeComplete = this.onRegionChangeComplete.bind(this);
     this.selectBlock = this.selectBlock.bind(this);
@@ -71,7 +62,7 @@ export default class Map extends React.Component {
   }
 
   selectBlock(selectedBlock) {
-    const { currentTime } = this.state;
+    const currentTime = new Date().getTime();
     const selectedExpiration = timing.getExpiration(selectedBlock, currentTime);
     this.setState({ selectedBlock, selectedExpiration });
   }
@@ -81,12 +72,8 @@ export default class Map extends React.Component {
   }
 
   park() {
-    const {
-      selectedBlock,
-      selectedExpiration,
-      currentTime,
-      userId
-    } = this.state;
+    const { selectedBlock, selectedExpiration, userId } = this.state;
+    const currentTime = new Date().getTime();
     const expiration = Math.min(
       selectedExpiration.getTime(),
       currentTime + timing.maxParking
@@ -135,10 +122,6 @@ export default class Map extends React.Component {
 
   render() {
     const {
-      currentTime,
-      dayIndexInWeek,
-      weekIndexInMonth,
-      currentHour,
       region,
       blocks,
       selectedBlock,
@@ -147,6 +130,10 @@ export default class Map extends React.Component {
       parkedExpiration,
       parkedNeighborhood
     } = this.state;
+    const currentDate = new Date();
+    const dayIndexInWeek = currentDate.getDay();
+    const weekIndexInMonth = Math.floor(currentDate / 7);
+    const currentHour = currentDate.getHours();
     const addressInfo = selectedBlock
       ? `${selectedBlock.fadd}-${selectedBlock.toadd} ${
           selectedBlock.street_name
@@ -157,7 +144,6 @@ export default class Map extends React.Component {
       : "Parking prohibited";
     const selectedBlockInfo =
       addressInfo && `${addressInfo}\n${expirationInfo}`;
-
     return (
       <View style={styles.container}>
         <MapView
@@ -204,7 +190,6 @@ export default class Map extends React.Component {
         )}
         {parkedCoordinates && (
           <ParkingStatus
-            currentTime={currentTime}
             parkedExpiration={parkedExpiration}
             parkedNeighborhood={parkedNeighborhood}
             findCar={this.findCar}
