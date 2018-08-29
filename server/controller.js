@@ -7,71 +7,73 @@ const handleResponse = (err, results, res) => {
   res.send(err || results);
 };
 
-router.get("/api/parking", (req, res) => {
-  const {
-    query: { llLatitude, llLongitude, urLatitude, urLongitude }
-  } = req;
-  model.getBlocksForRegion(
-    llLatitude,
-    llLongitude,
-    urLatitude,
-    urLongitude,
-    (err, results) => handleResponse(err, results, res)
-  );
-});
+const controller = {
+  getParkingInfo(req, res) {
+    const {
+      query: { llLatitude, llLongitude, urLatitude, urLongitude }
+    } = req;
+    model.getBlocksForRegion(
+      llLatitude,
+      llLongitude,
+      urLatitude,
+      urLongitude,
+      (err, results) => handleResponse(err, results, res)
+    );
+  },
 
-router.get("/api/users/stored/:id", (req, res) => {
-  const {
-    params: { id }
-  } = req;
-  model.getUser(id, (err, results) => {
-    handleResponse(err, results, res);
-  });
-});
-
-router.post("/api/users/login", (req, res) => {
-  const {
-    body: { username, password }
-  } = req;
-  model.loginUser(username, password, (err, results) => {
-    handleResponse(err, results, res);
-  });
-});
-
-router.post("/api/users/create", (req, res) => {
-  const {
-    body: { username, password }
-  } = req;
-  model.createUser(username, password, (err, results) => {
-    handleResponse(err, results, res);
-  });
-});
-
-router.patch("/api/users/:id/park", (req, res) => {
-  const {
-    params: { id }
-  } = req;
-  const {
-    body: { coordinates, expiration, neighborhood }
-  } = req;
-  model.parkAtLocation(
-    id,
-    coordinates,
-    expiration,
-    neighborhood,
-    (err, results) => {
+  getExistingUser(req, res) {
+    const {
+      params: { id }
+    } = req;
+    model.getUser(id, (err, results) => {
       handleResponse(err, results, res);
-    }
-  );
-});
+    });
+  },
 
-router.patch("/api/users/:id/unpark", (req, res) => {
-  const {
-    params: { id }
-  } = req;
-  model.unpark(id, (err, results) => {
-    handleResponse(err, results, res);
-  });
-});
+  loginUser(req, res) {
+    const {
+      body: { username, password }
+    } = req;
+    model.loginUser(username, password, (err, results) => {
+      handleResponse(err, results, res);
+    });
+  },
 
-module.exports = router;
+  createUser(req, res) {
+    const {
+      body: { username, password }
+    } = req;
+    model.createUser(username, password, (err, results) => {
+      handleResponse(err, results, res);
+    });
+  },
+
+  parkUser(req, res) {
+    const {
+      params: { id }
+    } = req;
+    const {
+      body: { coordinates, expiration, neighborhood }
+    } = req;
+    model.parkAtLocation(
+      id,
+      coordinates,
+      expiration,
+      neighborhood,
+      (err, results) => {
+        handleResponse(err, results, res);
+      }
+    );
+  },
+
+  unparkUser(req, res) {
+    const {
+      params: { id }
+    } = req;
+    model.unpark(id, (err, results) => {
+      handleResponse(err, results, res);
+    });
+  }
+};
+
+module.exports = controller;
