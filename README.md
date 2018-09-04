@@ -1,6 +1,84 @@
-This project was bootstrapped with [Create React Native App](https://github.com/react-community/create-react-native-app).
+# ParkingPal
 
-Below you'll find information about performing common tasks. The most recent version of this guide is available [here](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md).
+React Native app built on Postgres/Node/Express. 
+- Fetches parking regulation data from SF.gov, stores it in a database, and renders it in an interactive React Native MapView component.
+- Allows users to browse available parking, select a block to park on, and see how much time they have left before they have to move their car.
+
+The app should be able to run on Android devices as well as iOS, but it has only been tested for iOS. 
+
+## Tech Used
+
+This project was bootstrapped with [Create React Native App](https://github.com/react-community/create-react-native-app). Scroll to the bottom of this README to see more details. 
+
+### System Requirements
+- Node >=6.7.0 (runtime environment)
+- npm >=6.0 (dependency manager)
+- Postgres >=10.0 (database)
+- React Native >=0.55 (native environment for building React apps)
+- React Native CLI >=2.0 (CLI for RN)
+- Native app simulator (e.g., Xcode's)
+
+### Prod Dependencies
+- axios (API requests to Express server)
+- crypt-js (user password hashing)
+- expo (serving RN app)
+- fs (reading/writing data from/to .csv files for insertion into db)
+- lodash (object manipulation)
+- morgan (API request logging)
+- node-fetch (fetching data from SF.gov)
+- nodemon (serving live updates to filesystem)
+- pg (Postgres db connections)
+- react (library for front-end components)
+- react-native (library for serving React components natively)
+- react-native-maps (component library for accessing/rendering geospatial data)
+- react-navigation (multi-view naviagation for RN apps)
+
+## Development
+
+This module is set up to run locally on a simulator of an iOS environment (such as Xcode's simulator). Once all system requirements are installed, the steps required are:
+- Install dev/prod dependencies
+- Fetch data from SF.gov
+- Load data into Postgres
+- Run Express server
+- Run native app
+
+The app can also use Expo to run on mobile devices using the ```npm run start``` script, however there are currently issues with authentication on these devices, so you may not be able to fully experience the app on iOS or Android phones.
+
+### Install dependencies
+
+```sh
+npm install
+```
+
+### Fetching data
+
+```sh
+npm run fetch-data
+```
+
+### Loading data
+
+```sh
+npm run load-data
+```
+
+### Running server
+
+```sh
+npm run serve
+```
+> NOTE: This uses nodemon, so changes will update the server environment automatically.
+
+### Running app on iOS simulator
+
+```sh
+npm run start:local
+```
+> NOTE: This should open up a local simulator displaying the app--if you do not have a simulator set up, you may need to install one in order to run the app locally. Once the app is up and running, it should reload automatically to reflect changes made in development (although syntax errors may crash the app, in which case you'll need to run the start:local script again).
+
+----
+
+# Create React Native App Details
 
 ## Table of Contents
 
